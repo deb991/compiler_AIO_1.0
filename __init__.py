@@ -1,7 +1,7 @@
 #!/usr/bin/env python -i
 from tkinter import *
 from tkinter import scrolledtext
-from commands import save__file, save_as__file, save__all, new__file, export__html, mkFleRdOnly, cut
+from commands import *
 from tkinter.messagebox import askokcancel
 from tkinter import filedialog
 
@@ -10,12 +10,51 @@ import threading
 root = Tk(className='just another code editor but with some innovative features')
 edtr = scrolledtext.ScrolledText(root, width=100, height=100)
 
-thread_list = []
+def yscrollset(*stuff):
+    ## print 'yscrollset called', stuff
+    apply(textarea._vertScrollbar.set, stuff)
+    lineCounter.yview_moveto(stuff[0])
+
+def yscroll(*stuff):
+    ## print 'yscroll called', stuff
+    apply(textarea._textbox.yview, stuff)
+    apply(lineCounter.yview, stuff)
+
+
+def setLineCounter(*event):
+    # should be called check_line_count
+    # if the length of the main textarea (textarea) changes
+    # then wake up and update the line counter
+    new_length = int(textarea.index('end').split('.')[0])
+    if new_length != textarea.length:
+        textarea.length = new_length
+        updateLineCounter( )
+
+def updateLineCounter(self, *event):
+    lineCounter.config(state='normal')
+    lineCounter.delete('0.0', 'end')
+    for line in range(1, textarea.length-1):
+        lineCounter.insert('end', '%i\n' %line)
+    lineCounter.insert('end', '%i' %(textarea.length-1))
+    line, col = map(int, textarea.index("insert").split("."))
+    lineCounter.mark_set("insert", "%d.0" %(line))
+    lineCounter.config(state='disabled')
+
+
+textarea=edtr.ScrolledText(f, text_wrap='none')
+lineCounter=Text(textarea.interior(), width=5, bg='grey', state='disabled')
+textarea.length=int(textarea.index('end').split('.')[0])
+lineCounter=Text(textarea.interior(), width=5, bg='grey',
+    state='disabled')
+textarea.length=int(textarea.index('end').split('.')[0])
+textarea.component('text').config(yscrollcommand=yscrollset)
+textarea._vertScrollbar['command'] = yscroll
 
 #Few on demand commands
 def exit():
     if askokcancel("Quit", "Do you really want to quit?"):
         root.destroy()
+t_exit = threading.Thread(target=exit)
 
 def open__file():
     print('Open an existing file from the system.')
@@ -25,6 +64,19 @@ def open__file():
         contents = file.read()
         edtr.insert('1.0', contents)
         file.close()
+t = threading.Thread(target=open__file)
+
+
+def save__file():
+    print('save a file')
+    file = filedialog.asksaveasfile(mode='w')
+    if file != None:
+        # slice off the last character from get, as an extra return is added
+        data = edtr.get('1.0', END + '-1c')
+        file.write(data)
+        file.close( )
+    #return 'EOF'
+t_save__file = threading.Thread(target=save__file)
 
 menubar = Menu(root)
 fileMenu = Menu(menubar)
@@ -45,6 +97,7 @@ menubar.add_cascade(label='Edit', menu=editMenu)
 
 #editMenu.add_command(label='Cut', menu=cut)
 
+thread_list = [t, t_exit, t_new__file, t_new__file, t_save_as__file, t_save__all, t_export__html, t_export__html, t_cut]
 root.config(menu=menubar)
 edtr.pack()
 if __name__ == '__main__':
