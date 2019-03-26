@@ -1,9 +1,9 @@
 #!/usr/bin/env python -i
 from tkinter import *
-from tkinter import scrolledtext
+from tkinter import scrolledtext, filedialog, Frame
 from commands import *
 from tkinter.messagebox import askokcancel
-from tkinter import filedialog
+from apply.apply import apply
 
 import threading
 
@@ -40,8 +40,8 @@ def updateLineCounter(self, *event):
     lineCounter.mark_set("insert", "%d.0" %(line))
     lineCounter.config(state='disabled')
 
-
-textarea=edtr.ScrolledText(f, text_wrap='none')
+f = Frame
+textarea=edtr(f, text_wrap='none')
 lineCounter=Text(textarea.interior(), width=5, bg='grey', state='disabled')
 textarea.length=int(textarea.index('end').split('.')[0])
 lineCounter=Text(textarea.interior(), width=5, bg='grey',
