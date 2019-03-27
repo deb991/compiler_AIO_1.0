@@ -1,110 +1,87 @@
-#!/usr/bin/env python -i
-from tkinter import *
-from tkinter import scrolledtext, filedialog, Frame
-from commands import *
-from tkinter.messagebox import askokcancel
+#!/usr/bin/emv python -i
+import os
 import threading
 
-root = Tk(className='just another code editor but with some innovative features')
-edtr = scrolledtext.ScrolledText(root, width=100, height=100)
-frame = Frame
+def new__file():
+    print('Create a new file as per the requirement')
+    #return 'EOF'
+t_new__file = threading.Thread(target=new__file)
 
-#================Few on demand commands=================#
-def exit():
-    if askokcancel("Quit", "Do you really want to quit?"):
-        root.destroy()
-
-t_exit = threading.Thread(target=exit)
-
-def open__file():
-    print('Open an existing file from the system.')
-    # return 'EOF'
-    file = filedialog.askopenfile(parent=root, mode='rb', title='Select a file')
-    if file != None:
-        contents = file.read()
-        edtr.insert('1.0', contents)
-        file.close()
-
-t = threading.Thread(target=open__file)
 
 def save__file():
     print('save a file')
-    file = filedialog.asksaveasfile(mode='w')
-    if file != None:
-    # slice off the last character from get, as an extra return is added
-        data = edtr.get('1.0', END + '-1c')
-        file.write(data)
-        file.close()
-        # return 'EOF'
+    #return 'EOF'
+t_new__file = threading.Thread(target=save__file)
 
-t_save__file = threading.Thread(target=save__file)
+def save_as__file():
+    print('Save as option for existing file')
+    #return 'EOF'
+t_save_as__file = threading.Thread(target=save_as__file)
 
-#==============Menu Bar======================#
+def save__all():
+    print('save all files under an existing folder')
+    #return 'EOF'
+t_save__all = threading.Thread(target=save__all)
 
-menubar = Menu(root)
-fileMenu = Menu(menubar)
-menubar.add_cascade(label='File', menu=fileMenu)
+def export__html():
+    print('Export to HTML')
+    #return 'EOF'
+t_export__html = threading.Thread(target=export__html)
 
-fileMenu.add_command(label='New', command=new__file)
-fileMenu.add_command(label='Open', command=open__file)
-fileMenu.add_command(label='Save', command=save__file)
-fileMenu.add_command(label='Save as', command=save_as__file)
-fileMenu.add_command(label='Save All', command=save__all)
-fileMenu.add_command(label='Export to HTML', command=export__html)
-fileMenu.add_command(label='Make file read only', command=mkFleRdOnly)
-fileMenu.add_command(label='Exit', command=exit)
-fileMenu.add_separator()
-
-editMenu = Menu(menubar)
-menubar.add_cascade(label='Edit', menu=editMenu)
-
-editMenu.add_command(label='Cut', command=cut)
-editMenu.add_command(label='Copy', command=copy)
-editMenu.add_command(label='ClipBoard', command=clpBrd)
-editMenu.add_command(label='Paste', command=paste)
-editMenu.add_separator()
-editMenu.add_command(label='Delete', command=delt)
+def mkFleRdOnly():
+    print('Make file read only mode')
+    #return 'EOF'
+t_mkFleRdOnly = threading.Thread(target=mkFleRdOnly)
 
 
-viewMenu = Menu(menubar)
-menubar.add_cascade(label='View', menu=viewMenu)
+def cut():
+    print('cut')
+    #return 'EOF'
+t_cut = threading.Thread(target=cut)
 
-viewMenu.add_command(label='Full Screen mode', command=FSM)
-viewMenu.add_command(label='Presentation mode', command=PsM)
-viewMenu.add_separator()
+def copy():
+    print('Copy')
 
-runMenu = Menu(menubar)
-menubar.add_cascade(label='Run', menu=runMenu)
+t_copy = threading.Thread(target=copy)
 
-runMenu.add_command(label='Run', command=run)
-runMenu.add_command(label='Debug', command=dbug)
-runMenu.add_separator()
-runMenu.add_command(label='View Break points', command=VBP)
+def clpBrd():
+    print('Clip board')
 
+t_clpBrd = threading.Thread(target=clpBrd)
 
-sett = Menu(menubar)
-menubar.add_cascade(label='Settings', menu=sett)
+def paste():
+    print('paste')
 
-sett.add_command(label='Settings', command=sett)
-sett.add_separator()
-sett.add_command(label='Project Setting', command=sett__P)
+def delt():
+    print('Delete!!!')
 
-help = Menu(menubar)
-menubar.add_cascade(label='Help', menu=help)
+def FSM():
+    print('Full screen mode!!')
 
-help.add_command(label='About', command=abt)
-help.add_command(label='File Manager', command=fleAnlzer)
+def PsM():
+    print('Presentation Mode')
 
-#==========================Menu Bar==================#
+def run():
+    print('Run this code ::')
 
-#======================Thread========================#
-thread_list = [t, t_exit, t_new__file, t_new__file, t_save_as__file, t_save__all, t_export__html,
-               t_cut, t_copy, t_clpBrd]
+def dbug():
+    print('Debug this code ::')
 
-#======================Thread========================#
+def VBP():
+    print('View break point')
 
-root.config(menu=menubar)
-edtr.pack()
+def sett():
+    print('Universal setting')
 
-if __name__ == '__main__':
-    root.mainloop()
+def sett__P():
+    print('Project specified settings')
+
+def abt():
+    print('About')
+
+def fleAnlzer():
+    print('File analizer')
+
+def check__code():
+    print('this method is only for on demand issues')
+    #return 'EOF'
