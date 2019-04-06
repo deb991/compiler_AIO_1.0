@@ -2,86 +2,92 @@
 import os
 import threading
 
-def new__file():
-    print('Create a new file as per the requirement')
-    #return 'EOF'
-t_new__file = threading.Thread(target=new__file)
+class thisCommand():
+    def new__file(self):
+        print('Create a new file as per the requirement')
+        # return 'EOF'
 
+    t_new__file = threading.Thread(target=new__file)
 
-def save__file():
-    print('save a file')
-    #return 'EOF'
-t_new__file = threading.Thread(target=save__file)
+    def save__file(self):
+        print('save a file')
+        # return 'EOF'
 
-def save_as__file():
-    print('Save as option for existing file')
-    #return 'EOF'
-t_save_as__file = threading.Thread(target=save_as__file)
+    t_save__file = threading.Thread(target=save__file)
 
-def save__all():
-    print('save all files under an existing folder')
-    #return 'EOF'
-t_save__all = threading.Thread(target=save__all)
+    def save_as__file(self):
+        print('Save as option for existing file')
+        # return 'EOF'
 
-def export__html():
-    print('Export to HTML')
-    #return 'EOF'
-t_export__html = threading.Thread(target=export__html)
+    t_save_as__file = threading.Thread(target=save_as__file)
 
-def mkFleRdOnly():
-    print('Make file read only mode')
-    #return 'EOF'
-t_mkFleRdOnly = threading.Thread(target=mkFleRdOnly)
+    def save__all(self):
+        print('save all files under an existing folder')
+        # return 'EOF'
 
+    t_save__all = threading.Thread(target=save__all)
 
-def cut():
-    print('cut')
-    #return 'EOF'
-t_cut = threading.Thread(target=cut)
+    def export__html(self):
+        print('Export to HTML')
+        # return 'EOF'
 
-def copy():
-    print('Copy')
+    t_export__html = threading.Thread(target=export__html)
 
-t_copy = threading.Thread(target=copy)
+    def mkFleRdOnly(self):
+        print('Make file read only mode')
+        # return 'EOF'
 
-def clpBrd():
-    print('Clip board')
+    t_mkFleRdOnly = threading.Thread(target=mkFleRdOnly)
 
-t_clpBrd = threading.Thread(target=clpBrd)
+    def cut(self):
+        print('cut')
+        # return 'EOF'
 
-def paste():
-    print('paste')
+    t_cut = threading.Thread(target=cut)
 
-def delt():
-    print('Delete!!!')
+    def copy(self):
+        print('Copy')
 
-def FSM():
-    print('Full screen mode!!')
+    t_copy = threading.Thread(target=copy)
 
-def PsM():
-    print('Presentation Mode')
+    def clpBrd(self):
+        print('Clip board')
 
-def run():
-    print('Run this code ::')
+    t_clpBrd = threading.Thread(target=clpBrd)
 
-def dbug():
-    print('Debug this code ::')
+    def paste(self):
+        print('paste')
 
-def VBP():
-    print('View break point')
+    def delt(self):
+        print('Delete!!!')
 
-def sett():
-    print('Universal setting')
+    def FSM(self):
+        print('Full screen mode!!')
 
-def sett__P():
-    print('Project specified settings')
+    def PsM(self):
+        print('Presentation Mode')
 
-def abt():
-    print('About')
+    def run(self):
+        print('Run this code ::')
 
-def fleAnlzer():
-    print('File analizer')
+    def dbug(self):
+        print('Debug this code ::')
 
-def check__code():
-    print('this method is only for on demand issues')
-    #return 'EOF'
+    def VBP(self):
+        print('View break point')
+
+    def sett(self):
+        print('Universal setting')
+
+    def sett__P(self):
+        print('Project specified settings')
+
+    def abt(self):
+        print('About')
+
+    def fleAnlzer(self):
+        print('File analizer')
+
+    def check__code(self):
+        print('this method is only for on demand issues')
+        # return 'EOF'
