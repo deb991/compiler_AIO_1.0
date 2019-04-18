@@ -6,6 +6,7 @@ from commands import *
 from tkinter.messagebox import askokcancel
 from idlelib.tree import FileTreeItem, ScrolledCanvas, TreeNode, _tree_widget
 import threading
+from commands import *
 
 
 root = Tk('~~~~console~~~~', )
@@ -94,54 +95,54 @@ class wndo(tk.Frame):
     fileMenu = Menu(menubar)
     menubar.add_cascade(label='File', menu=fileMenu)
 
-    fileMenu.add_command(label='New', command=new__file)
+    fileMenu.add_command(label='New', command=thisCommand.new__file)
     fileMenu.add_command(label='Open', command=open__file)
     fileMenu.add_command(label='Save', command=save__file)
-    fileMenu.add_command(label='Save as', command=save_as__file)
-    fileMenu.add_command(label='Save All', command=save__all)
-    fileMenu.add_command(label='Export to HTML', command=export__html)
-    fileMenu.add_command(label='Make file read only', command=mkFleRdOnly)
+    fileMenu.add_command(label='Save as', command=thisCommand.save_as__file)
+    fileMenu.add_command(label='Save All', command=thisCommand.save__all)
+    fileMenu.add_command(label='Export to HTML', command=thisCommand.export__html)
+    fileMenu.add_command(label='Make file read only', command=thisCommand.mkFleRdOnly)
     fileMenu.add_command(label='Exit', command=exit)
     fileMenu.add_separator()
 
     editMenu = Menu(menubar)
     menubar.add_cascade(label='Edit', menu=editMenu)
 
-    editMenu.add_command(label='Cut', command=cut)
-    editMenu.add_command(label='Copy', command=copy)
-    editMenu.add_command(label='ClipBoard', command=clpBrd)
-    editMenu.add_command(label='Paste', command=paste)
+    editMenu.add_command(label='Cut', command=thisCommand.cut)
+    editMenu.add_command(label='Copy', command=thisCommand.copy)
+    editMenu.add_command(label='ClipBoard', command=thisCommand.clpBrd)
+    editMenu.add_command(label='Paste', command=thisCommand.paste)
     editMenu.add_separator()
-    editMenu.add_command(label='Delete', command=delt)
+    editMenu.add_command(label='Delete', command=thisCommand.delt)
 
     viewMenu = Menu(menubar)
     menubar.add_cascade(label='View', menu=viewMenu)
 
-    viewMenu.add_command(label='Full Screen mode', command=FSM)
-    viewMenu.add_command(label='Presentation mode', command=PsM)
+    viewMenu.add_command(label='Full Screen mode', command=thisCommand.FSM)
+    viewMenu.add_command(label='Presentation mode', command=thisCommand.PsM)
     viewMenu.add_separator()
 
     runMenu = Menu(menubar)
     menubar.add_cascade(label='Run', menu=runMenu)
 
-    runMenu.add_command(label='Run', command=run)
-    runMenu.add_command(label='Debug', command=dbug)
+    runMenu.add_command(label='Run', command=thisCommand.run)
+    runMenu.add_command(label='Debug', command=thisCommand.dbug)
     runMenu.add_separator()
-    runMenu.add_command(label='View Break points', command=VBP)
+    runMenu.add_command(label='View Break points', command=thisCommand.VBP)
 
     sett = Menu(menubar)
     menubar.add_cascade(label='Settings', menu=sett)
 
     sett.add_command(label='Settings', command=sett)
     sett.add_separator()
-    sett.add_command(label='Project Setting', command=sett__P)
+    sett.add_command(label='Project Setting', command=thisCommand.sett__P)
 
 
     help = Menu(menubar)
     menubar.add_cascade(label='Help', menu=help)
 
-    help.add_command(label='About', command=abt)
-    help.add_command(label='File Manager', command=fleAnlzer)
+    help.add_command(label='About', command=thisCommand.abt)
+    help.add_command(label='File Manager', command=thisCommand.fleAnlzer)
 
 
     L_Side_menubar = Frame(root)
@@ -163,8 +164,9 @@ class wndo(tk.Frame):
         # ==========================Menu Bar==================#
 
         #======================Thread========================#
-    thread_list = [t, t_exit, t_new__file, t_new__file, t_save_as__file, t_save__all, t_export__html,
-                       t_cut, t_copy, t_clpBrd]
+    thread_list = [t, t_exit, thisCommand.t_new__file, thisCommand.t_new__file, thisCommand.t_save_as__file,
+                  thisCommand.t_save__all, thisCommand.t_export__html,
+                      thisCommand.t_cut, thisCommand.t_copy, thisCommand.t_clpBrd]
         #======================Thread========================#
 
 
