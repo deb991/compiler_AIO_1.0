@@ -9,33 +9,22 @@ import threading
 
 
 root = Tk('~~~~console~~~~', )
+root.configure(background='grey')
 edtr = Canvas(root, width=1200, height=600)
 
 notepad = tk.Text(edtr, width=120, height=80)
 ws = notepad.winfo_screenmmwidth()
 hs = notepad.winfo_screenmmheight()
 
-sc = ScrolledCanvas(edtr, bg="white", highlightthickness=1, takefocus=1, width=140, height=100)
-
 edtr.create_window((0, 0), window=notepad, anchor=NW)
 
 S = Scrollbar(root)
 S.pack(side=RIGHT, expand=True, fill=Y)
-notepad.pack(side=LEFT, expand=True, fill=BOTH)
-sc.frame.pack(expand=True, fill=BOTH, side=RIGHT)
-
+notepad.pack(side=LEFT, expand=True, fill=X)
 
 S.config(command=notepad.yview)
 notepad.config(yscrollcommand=S.set)
 notepad.insert('end', '')
-
-
-item = FileTreeItem(os.path.expanduser('C://Users//'))
-node = TreeNode(sc.canvas, None, item)
-node.expand()
-
-
-edtr.pack()
 
 def exit():
     if askokcancel("Quit", "Do you really want to quit?"):
@@ -44,97 +33,34 @@ def exit():
 
 t_exit = threading.Thread(target=exit)
 
+def f__Manager():
+    pass
+
 
 class Struct():
     pass
 #=========================================
+
 #=========================================
 
-
-class TextLineNumbers(tk.Canvas):
-    def __init__(self, *args, **kwargs):
-        tk.Canvas.__init__(self, *args, **kwargs)
-        self.textwidget = None
-
-    def attach(self, text_widget):
-        self.textwidget = text_widget
-
-    def redraw(self, *args):
-        '''redraw line numbers'''
-        self.delete("all")
-        i = self.textwidget.index("@0,0")
-        while True:
-            dline = self.textwidget.dlineinfo(i)
-            if dline is None: break
-            y = dline[1]
-            linenum = str(i).split(".")[0]
-            self.create_text(2, y, anchor="nw", text=linenum)
-            i = self.textwidget.index("%s+1line" % i)
-
-
-class CustomText(tk.Text):
-    def __init__(self, *args, **kwargs):
-        tk.Text.__init__(self, *args, **kwargs)
-        self.tk.eval('''
-            proc widget_proxy {widget widget_command args} 
-                # call the real tk widget command with the real args
-                set result [uplevel [linsert $args 0 $widget_command]
-                # generate the event for certain types of commands
-                if {([lindex $args 0] in {insert replace delete}) ||
-                    ([lrange $args 0 2] == {mark set insert}) || 
-                    ([lrange $args 0 1] == {xview moveto}) ||
-                    ([lrange $args 0 1] == {xview scroll}) ||
-                    ([lrange $args 0 1] == {yview moveto}) ||
-                    ([lrange $args 0 1] == {yview scroll})} 
-                    event generate  $widget <<Change>> -when tail
-
-                # return the result from the real widget command
-                return $result
-            }
-            ''')
-        self.tk.eval('''
-            rename {widget} _{widget}
-            interp alias {{}} ::{widget} {{}} widget_proxy {widget} _{widget}
-        '''.format(widget=str(self)))
-
 #==========================================
 #==========================================
-class wndo():
+class wndo(tk.Frame):
     UPDATE_PERIOD = 100  # ms
     editors = []
     updateId = None
 
-    def __init__(self, *args, **kwargs):
-        #self.C = Canvas(root, bg="white", height=560, width=450)
-        #self.C.grid(row=0, column=0, rowspan=0, columnspan=0, sticky='nsew')
+    def __init__(self, **kw):
+
+        super().__init__(**kw)
         print('Simple statement!!!')
-        #self.C.pack()
         global data
         global text
         data = Struct()
-        # initData(data)
-
-        tk.Frame.__init__(self, *args, **kwargs)
-        self.text = CustomText(self)
-        self.vsb = tk.Scrollbar(orient="vertical", command=self.text.yview)
-        self.text.configure(yscrollcommand=self.vsb.set)
-        self.text.tag_configure("bigfont", font=("Helvetica", "24", "bold"))
-        self.linenumbers = TextLineNumbers(self, width=30)
-        self.linenumbers.attach(self.text)
-
-        self.vsb.pack(side="right", fill="y")
-        self.linenumbers.pack(side="left", fill="y")
-        self.text.pack(side="right", fill="both", expand=True)
-
-        self.text.bind("<<Change>>", self._on_change)
-        self.text.bind("<Configure>", self._on_change)
-        file = open('C:/your/file/location/myFile.xml')
-        self.text.insert("end", file.read())
-
-    def _on_change(self, event):
-        self.linenumbers.redraw()
+        #initData(data)
 
         #=================By property menthods===================#
+
 
         # ================Few on demand commands=================#
 
@@ -160,6 +86,7 @@ class wndo():
             # return 'EOF'
 
     t_save__file = threading.Thread(target=save__file)
+
 
     # ==============Menu Bar======================#
 
@@ -209,30 +136,43 @@ class wndo():
     sett.add_separator()
     sett.add_command(label='Project Setting', command=sett__P)
 
+
     help = Menu(menubar)
     menubar.add_cascade(label='Help', menu=help)
 
     help.add_command(label='About', command=abt)
     help.add_command(label='File Manager', command=fleAnlzer)
 
+
+    L_Side_menubar = Frame(root)
+    L_Side_menubar.pack(fill=X, side=BOTTOM)
+
+    fileManager__button = Button(L_Side_menubar, text='File Manager', command=f__Manager) #.pack(side=LEFT, padx=1, pady=1)
+    fileManager__button.grid(column=0, row=1, columnspan=1, padx=1, sticky=SW)
+
+    project_window__button = Button(L_Side_menubar, text='Project Window', command=f__Manager)
+    project_window__button.grid(column=1, row=1, columnspan=1, padx=1, sticky=SW)
+
+    debug__button = Button(L_Side_menubar, text='Debug', command=f__Manager)
+    debug__button.grid(column=2, row=1, columnspan=1, padx=1, sticky=SW)
+
+    console__button = Button(L_Side_menubar, text='Console', command=f__Manager)
+    console__button.grid(column=3, row=1, columnspan=1, padx=1, sticky=SW)
+
+
         # ==========================Menu Bar==================#
 
         #======================Thread========================#
     thread_list = [t, t_exit, t_new__file, t_new__file, t_save_as__file, t_save__all, t_export__html,
                        t_cut, t_copy, t_clpBrd]
-
-
-
-
-
-
         #======================Thread========================#
+
 
 root.config(menu=wndo.menubar)
 edtr.pack()
 
 
 if __name__ == '__main__':
-    #root = tk.Tk()
     nPad = wndo()
+    nPad.pack(side="top", fill="both", expand=True)
     root.mainloop()
