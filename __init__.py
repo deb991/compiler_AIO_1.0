@@ -6,14 +6,13 @@ from commands import *
 from tkinter.messagebox import askokcancel
 from idlelib.tree import FileTreeItem, ScrolledCanvas, TreeNode, _tree_widget
 import threading
-from commands import *
 
 
 root = Tk('~~~~console~~~~', )
 root.configure(background='grey')
 edtr = Canvas(root, width=1200, height=600)
 
-notepad = tk.Text(edtr, width=120, height=80)
+notepad = tk.Text(edtr, width=900, height=400)
 ws = notepad.winfo_screenmmwidth()
 hs = notepad.winfo_screenmmheight()
 
@@ -26,6 +25,8 @@ notepad.pack(side=LEFT, expand=True, fill=X)
 S.config(command=notepad.yview)
 notepad.config(yscrollcommand=S.set)
 notepad.insert('end', '')
+
+#edtr.pack()
 
 def exit():
     if askokcancel("Quit", "Do you really want to quit?"):
@@ -41,23 +42,95 @@ def f__Manager():
 class Struct():
     pass
 #=========================================
-
 #=========================================
 
+class TextLineNumbers(tk.Canvas):
+    def __init__(self, *args, **kwargs):
+        tk.Canvas.__init__(self, *args, **kwargs)
+        self.textwidget = None
+
+    def attach(self, text_widget):
+        self.textwidget = text_widget
+
+    def redraw(self, *args):
+        '''redraw line numbers'''
+        self.delete("all")
+
+        i = self.textwidget.index("@0,0")
+        while True :
+            dline= self.textwidget.dlineinfo(i)
+            if dline is None: break
+            y = dline[1]
+            linenum = str(i).split(".")[0]
+            self.create_text(2,y,anchor="nw", text=linenum)
+            i = self.textwidget.index("%s+1line" % i)
+
+
+class CustomText(tk.Text):
+    def __init__(self, *args, **kwargs):
+        tk.Text.__init__(self, *args, **kwargs)
+
+        # create a proxy for the underlying widget
+        self._orig = self._w + "_orig"
+        self.tk.call("rename", self._w, self._orig)
+        self.tk.createcommand(self._w, self._proxy)
+
+    def _proxy(self, *args):
+        # let the actual widget perform the requested action
+        cmd = (self._orig,) + args
+        try:
+            result = self.tk.call(cmd)
+        except Exception:
+            return None
+
+        # generate an event if something was added or deleted,
+        # or the cursor position changed
+        if (args[0] in ("insert", "replace", "delete") or
+            args[0:3] == ("mark", "set", "insert") or
+            args[0:2] == ("xview", "moveto") or
+            args[0:2] == ("xview", "scroll") or
+            args[0:2] == ("yview", "moveto") or
+            args[0:2] == ("yview", "scroll")
+        ):
+            self.event_generate("<<Change>>", when="tail")
+
+        # return what the actual widget returned
+        return result
+
 #==========================================
 #==========================================
+
+
 class wndo(tk.Frame):
     UPDATE_PERIOD = 100  # ms
     editors = []
     updateId = None
 
-    def __init__(self, **kw):
+    def __init__(self, *args, **kwargs):
+        tk.Frame.__init__(self, *args, **kwargs)
+        self.text = CustomText(self)
+        self.vsb = tk.Scrollbar(orient="vertical", command=self.text.yview)
+        self.text.configure(yscrollcommand=self.vsb.set)
+        self.text.tag_configure("bigfont", font=("Helvetica", "24", "bold"))
+        self.linenumbers = TextLineNumbers(self, width=30)
+        self.linenumbers.attach(self.text)
 
-        super().__init__(**kw)
-        print('Simple statement!!!')
-        global data
-        global text
-        data = Struct()
+        self.vsb.pack(side="right", fill="y")
+        self.linenumbers.pack(side="left", fill="y")
+        self.text.pack(side="right", fill="both", expand=True)
+
+        self.text.bind("<<Change>>", self._on_change)
+        self.text.bind("<Configure>", self._on_change)
+
+    def _on_change(self, event):
+        self.linenumbers.redraw()
+
+
+#super().__init__(**kw)
+        #print('Simple statement!!!')
+        #global data
+        #global text
+        #data = Struct()
         #initData(data)
 
         #=================By property menthods===================#
@@ -95,54 +168,54 @@ class wndo(tk.Frame):
     fileMenu = Menu(menubar)
     menubar.add_cascade(label='File', menu=fileMenu)
 
-    fileMenu.add_command(label='New', command=thisCommand.new__file)
+    fileMenu.add_command(label='New', command=new__file)
     fileMenu.add_command(label='Open', command=open__file)
     fileMenu.add_command(label='Save', command=save__file)
-    fileMenu.add_command(label='Save as', command=thisCommand.save_as__file)
-    fileMenu.add_command(label='Save All', command=thisCommand.save__all)
-    fileMenu.add_command(label='Export to HTML', command=thisCommand.export__html)
-    fileMenu.add_command(label='Make file read only', command=thisCommand.mkFleRdOnly)
+    fileMenu.add_command(label='Save as', command=save_as__file)
+    fileMenu.add_command(label='Save All', command=save__all)
+    fileMenu.add_command(label='Export to HTML', command=export__html)
+    fileMenu.add_command(label='Make file read only', command=mkFleRdOnly)
     fileMenu.add_command(label='Exit', command=exit)
     fileMenu.add_separator()
 
     editMenu = Menu(menubar)
     menubar.add_cascade(label='Edit', menu=editMenu)
 
-    editMenu.add_command(label='Cut', command=thisCommand.cut)
-    editMenu.add_command(label='Copy', command=thisCommand.copy)
-    editMenu.add_command(label='ClipBoard', command=thisCommand.clpBrd)
-    editMenu.add_command(label='Paste', command=thisCommand.paste)
+    editMenu.add_command(label='Cut', command=cut)
+    editMenu.add_command(label='Copy', command=copy)
+    editMenu.add_command(label='ClipBoard', command=clpBrd)
+    editMenu.add_command(label='Paste', command=paste)
     editMenu.add_separator()
-    editMenu.add_command(label='Delete', command=thisCommand.delt)
+    editMenu.add_command(label='Delete', command=delt)
 
     viewMenu = Menu(menubar)
     menubar.add_cascade(label='View', menu=viewMenu)
 
-    viewMenu.add_command(label='Full Screen mode', command=thisCommand.FSM)
-    viewMenu.add_command(label='Presentation mode', command=thisCommand.PsM)
+    viewMenu.add_command(label='Full Screen mode', command=FSM)
+    viewMenu.add_command(label='Presentation mode', command=PsM)
     viewMenu.add_separator()
 
     runMenu = Menu(menubar)
     menubar.add_cascade(label='Run', menu=runMenu)
 
-    runMenu.add_command(label='Run', command=thisCommand.run)
-    runMenu.add_command(label='Debug', command=thisCommand.dbug)
+    runMenu.add_command(label='Run', command=run)
+    runMenu.add_command(label='Debug', command=dbug)
     runMenu.add_separator()
-    runMenu.add_command(label='View Break points', command=thisCommand.VBP)
+    runMenu.add_command(label='View Break points', command=VBP)
 
     sett = Menu(menubar)
     menubar.add_cascade(label='Settings', menu=sett)
 
     sett.add_command(label='Settings', command=sett)
     sett.add_separator()
-    sett.add_command(label='Project Setting', command=thisCommand.sett__P)
+    sett.add_command(label='Project Setting', command=sett__P)
 
 
     help = Menu(menubar)
     menubar.add_cascade(label='Help', menu=help)
 
-    help.add_command(label='About', command=thisCommand.abt)
-    help.add_command(label='File Manager', command=thisCommand.fleAnlzer)
+    help.add_command(label='About', command=abt)
+    help.add_command(label='File Manager', command=fleAnlzer)
 
 
     L_Side_menubar = Frame(root)
@@ -164,17 +237,14 @@ class wndo(tk.Frame):
         # ==========================Menu Bar==================#
 
         #======================Thread========================#
-    thread_list = [t, t_exit, thisCommand.t_new__file, thisCommand.t_new__file, thisCommand.t_save_as__file,
-                  thisCommand.t_save__all, thisCommand.t_export__html,
-                      thisCommand.t_cut, thisCommand.t_copy, thisCommand.t_clpBrd]
+    thread_list = [t, t_exit, t_new__file, t_new__file, t_save_as__file, t_save__all, t_export__html,
+                       t_cut, t_copy, t_clpBrd]
         #======================Thread========================#
 
-
 root.config(menu=wndo.menubar)
-edtr.pack()
-
 
 if __name__ == '__main__':
     nPad = wndo()
+    #edtr.pack()
     nPad.pack(side="top", fill="both", expand=True)
     root.mainloop()
