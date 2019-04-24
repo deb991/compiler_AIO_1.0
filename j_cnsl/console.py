@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import font
 from tkinter.font import *
+import subprocess
 
 #=====Accessing Command location
 
@@ -12,7 +13,8 @@ ntCmdlist1 = "C:\\Windows\\System"
 ntCmdlist2 = "C:\\Windows\\System32"
 x11Cmd = "/usr/bin/"
 sysShell = 'C:\\Windows\\System32\\cmd.exe'
-curr__dir = (os.getcwd(), '/>>')
+curr__dir = (os.getcwd(), '/>')
+
 
 if os.path.isdir(ntCmdlist1 and ntCmdlist2):
     print(os.listdir(ntCmdlist1), '\n', os.listdir(ntCmdlist2))
@@ -33,6 +35,7 @@ else:
 
 consl = Tk()
 
+
 w = 1200               # width
 h = 380                # height
 
@@ -46,13 +49,13 @@ x = (ws/1) - (w/1)
 y = (hs/1) - (h/1)
 
 consl.geometry("1200x380")
-consl.resizable(1,1)
+consl.resizable(1, 1)
 consl.configure(background='black')
 
 #Adding canvas on Root window for other services.
 
-cmd_OP = Canvas(consl, width=1000, height=500)
-cmd_OP_viewer = Text(cmd_OP, width=700, height=350, background="black", foreground="yellow")
+cmd_OP = Canvas(consl, width=1000, height=500, background="black")
+cmd_OP_viewer = Text(cmd_OP, width=700, height=350, background="black", foreground="white")
 
 cmd_OP.create_window((0,0), window=cmd_OP_viewer, anchor=NW)
 cmd_OP_viewer.pack(side=TOP, expand=True, fill=X)
@@ -61,14 +64,41 @@ cmd_OP_viewer.pack(side=TOP, expand=True, fill=X)
 helv9 = font.Font(family='Helvetica', size=9, weight=tkinter.font.BOLD)
 
 # input of the console are being set.
-l1 = Label(consl, text=curr__dir, background="black", foreground="yellow")
-entry = Entry(consl, background="black", foreground="yellow")
+l1 = Label(consl, text=curr__dir, background="black", foreground="white")
+
+entry = Entry(consl, background="black", foreground="white")
 entry.pack(side=BOTTOM, anchor=SW, expand=TRUE, fill=X)
 entry.delete(0, END)
-entry.insert(0, '>>')
+entry.insert(0, '')
+entry.pack()
+
 l1.pack(side=BOTTOM, anchor=SW, expand=TRUE)
 
-cmd_OP.pack()
+cmdOP = subprocess.check_call(entry.get(), shell=True)
+
+def run_win_cmd():
+    result = []
+    process = subprocess.Popen(entry.get(),
+                               shell=True,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE, universal_newlines=True)
+
+    for line in process.stdout:
+        result.append(line)
+    errcode = process.returncode
+    for line in result:
+        print(line.decode('UTF-8'))
+    if errcode is not None:
+        raise Exception('cmd %s failed, see above for details', entry.get())
+
+def get_entry():
+    print(entry.get( ))
+    cmd_OP_viewer.insert(END, run_win_cmd)
+    cmd_OP_viewer.config(state=DISABLED)
+
+entry.bind("<Return>", (lambda event: (get_entry())))
+cmd_OP.pack( )
+#redirect function for communication between cmd/ Shell & this application.
 
 
 
