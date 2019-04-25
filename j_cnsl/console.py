@@ -1,10 +1,12 @@
 #!/usr/bin/env python -i
 import os
+import sys
 import tkinter as tk
 from tkinter import *
 from tkinter import font
 from tkinter.font import *
 import subprocess
+
 
 #=====Accessing Command location
 
@@ -58,6 +60,8 @@ cmd_OP = Canvas(consl, width=1000, height=500, background="black")
 cmd_OP_viewer = Text(cmd_OP, width=700, height=350, background="black", foreground="white")
 
 cmd_OP.create_window((0,0), window=cmd_OP_viewer, anchor=NW)
+ScBar = tk.Scrollbar(orient="vertical", command=cmd_OP_viewer.yview)
+cmd_OP_viewer.configure(yscrollcommand=ScBar.set)
 cmd_OP_viewer.pack(side=TOP, expand=True, fill=X)
 
 #Font for all output & other operations.
@@ -76,30 +80,47 @@ l1.pack(side=BOTTOM, anchor=SW, expand=TRUE)
 
 cmdOP = subprocess.check_call(entry.get(), shell=True)
 
+entry.bind("<Return>", (lambda event: (get_entry())))
+
 def run_win_cmd():
     result = []
-    process = subprocess.Popen(entry.get(),
-                               shell=True,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE, universal_newlines=True)
+    try:
+        process = subprocess.Popen(entry.get(),
+                                   shell=True,
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE, universal_newlines=False)
+
+        #p = subprocess.Popen(entry.get(),stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        #output, errors = p.communicate()
+
+
+    except:
+        process = os.system(entry.get())
 
     for line in process.stdout:
         result.append(line)
     errcode = process.returncode
     for line in result:
-        print(line.decode('UTF-8'))
+
+        data = "".join(map(bytes.decode, result))
+
+        return data
     if errcode is not None:
-        raise Exception('cmd %s failed, see above for details', entry.get())
+        raise Exception('cmd %s failed, see above for details for :: \n', entry.get(), process)
+
+
+
+
+
+    # Redirecting a text file for log purpose.
+
 
 def get_entry():
     print(entry.get( ))
-    cmd_OP_viewer.insert(END, run_win_cmd)
+    cmd_OP_viewer.insert(END, str(run_win_cmd()))
     cmd_OP_viewer.config(state=DISABLED)
 
-entry.bind("<Return>", (lambda event: (get_entry())))
 cmd_OP.pack( )
-#redirect function for communication between cmd/ Shell & this application.
-
 
 
 if __name__ == '__main__':
