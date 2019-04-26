@@ -6,6 +6,8 @@ from tkinter import *
 from tkinter import font
 from tkinter.font import *
 import subprocess
+import threading
+from threading import *
 
 
 #=====Accessing Command location
@@ -57,10 +59,10 @@ consl.configure(background='black')
 #Adding canvas on Root window for other services.
 
 cmd_OP = Canvas(consl, width=1000, height=500, background="black")
-cmd_OP_viewer = Text(cmd_OP, width=700, height=350, background="black", foreground="white")
+cmd_OP_viewer = Text(cmd_OP, width=700, height=350, background="black", foreground="green")
 
 cmd_OP.create_window((0,0), window=cmd_OP_viewer, anchor=NW)
-ScBar = tk.Scrollbar(orient="vertical", command=cmd_OP_viewer.yview)
+ScBar = tk.Scrollbar(orient="vertical", command=cmd_OP_viewer.yview, background="grey")
 cmd_OP_viewer.configure(yscrollcommand=ScBar.set)
 cmd_OP_viewer.pack(side=TOP, expand=True, fill=X)
 
@@ -72,8 +74,8 @@ l1 = Label(consl, text=curr__dir, background="black", foreground="white")
 
 entry = Entry(consl, background="black", foreground="white")
 entry.pack(side=BOTTOM, anchor=SW, expand=TRUE, fill=X)
-entry.delete(0, END)
 entry.insert(0, '')
+#entry.delete(0, END)
 entry.pack()
 
 l1.pack(side=BOTTOM, anchor=SW, expand=TRUE)
@@ -82,6 +84,7 @@ cmdOP = subprocess.check_call(entry.get(), shell=True)
 
 entry.bind("<Return>", (lambda event: (get_entry())))
 
+
 def run_win_cmd():
     result = []
     try:
@@ -89,39 +92,38 @@ def run_win_cmd():
                                    shell=True,
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE, universal_newlines=False)
-
-        #p = subprocess.Popen(entry.get(),stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-        #output, errors = p.communicate()
-
-
     except:
         process = os.system(entry.get())
-
     for line in process.stdout:
         result.append(line)
     errcode = process.returncode
     for line in result:
-
         data = "".join(map(bytes.decode, result))
-
         return data
     if errcode is not None:
         raise Exception('cmd %s failed, see above for details for :: \n', entry.get(), process)
 
-
-
-
-
     # Redirecting a text file for log purpose.
+
+t_run_win_cmd = threading.Thread(target=run_win_cmd)
+t_run_win_cmd.setDaemon(True)
+
 
 
 def get_entry():
     print(entry.get( ))
-    cmd_OP_viewer.insert(END, str(run_win_cmd()))
-    cmd_OP_viewer.config(state=DISABLED)
+    while True:
+        cmd_OP_viewer.insert(END, str(run_win_cmd()))
+        cmd_OP_viewer.config(state=DISABLED)
+        entry.delete(0, END)
+        t_run_win_cmd.start()
+        pass
+
+
 
 cmd_OP.pack( )
 
 
 if __name__ == '__main__':
     consl.mainloop()
+    t_run_win_cmd.join()
