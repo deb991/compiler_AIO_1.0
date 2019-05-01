@@ -92,11 +92,16 @@ def PsM():
 
 
 def run():
+    os.system('python -m <Control-A>')
     print('Run this code ::')
 
 
+
 def dbug():
+    import pdb
+    from pdb import set_trace
     print('Debug this code ::')
+
 
 
 def VBP():
@@ -144,3 +149,4 @@ def f__Manager():
     root.mainloop( )
 
 t__f_manager = threading.Thread(target=f__Manager)
+
