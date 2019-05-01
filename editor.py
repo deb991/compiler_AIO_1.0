@@ -1,14 +1,13 @@
 #!/usr/bin/emv python -i
 import tkinter as tk
 from tkinter import *
-from tkinter import scrolledtext, filedialog, Frame, Canvas
-from commands import *
+from tkinter import filedialog, Frame, Canvas
+from J_pad.commands import *
 from tkinter.messagebox import askokcancel
-from idlelib.tree import FileTreeItem, ScrolledCanvas, TreeNode, _tree_widget
 import threading
 
 
-root = Tk('~~~~console~~~~', )
+root = Tk('~~~~J-PAD~~~~', )
 root.configure(background='grey')
 edtr = Canvas(root, width=1200, height=600)
 
@@ -18,12 +17,12 @@ hs = notepad.winfo_screenmmheight()
 
 edtr.create_window((0, 0), window=notepad, anchor=NW)
 
-S = Scrollbar(root)
-S.pack(side=RIGHT, expand=True, fill=Y)
+#S = Scrollbar(root)
+#S.pack(side=RIGHT, expand=True, fill=Y)
 notepad.pack(side=LEFT, expand=True, fill=X)
 
-S.config(command=notepad.yview)
-notepad.config(yscrollcommand=S.set)
+#S.config(command=notepad.yview)
+#notepad.config(yscrollcommand=S.set)
 notepad.insert('end', '')
 
 #edtr.pack()
@@ -42,6 +41,7 @@ def f__Manager():
 class Struct():
     pass
 #=========================================
+#Text input & line count operations.
 #=========================================
 
 class TextLineNumbers(tk.Canvas):
@@ -101,6 +101,71 @@ class CustomText(tk.Text):
 #==========================================
 
 
+#==========================================
+#Right mouse click option
+#==========================================
+
+def rClicker(e):
+    ''' right click context menu for all Tk Entry and Text widgets
+    '''
+
+    try:
+        def rClick_Copy(e, apnd=0):
+            e.widget.event_generate('<Control-c>')
+
+        def rClick_Cut(e):
+            e.widget.event_generate('<Control-x>')
+
+        def rClick_Paste(e):
+            e.widget.event_generate('<Control-v>')
+
+        def rClick_Run(e):
+            e.widget.event_generate(run())
+
+        def rClick_Debug(e):
+            e.widget.event_generate()
+
+
+        e.widget.focus()
+
+        nclst=[
+               (' Cut', lambda e=e: rClick_Cut(e)),
+               (' Copy', lambda e=e: rClick_Copy(e)),
+               (' Paste', lambda e=e: rClick_Paste(e)),
+            (' Run', lambda e=e: rClick_Run(e)),
+            (' Debug', lambda e=e: rClick_Debug(e))
+               ]
+
+        rmenu = Menu(None, tearoff=0, takefocus=0)
+
+        for (txt, cmd) in nclst:
+            rmenu.add_command(label=txt, command=cmd)
+
+        rmenu.tk_popup(e.x_root+40, e.y_root+10,entry="0")
+        rmenu.config(foreground='grey', background='black')
+
+    except TclError:
+        print(' - rClick menu, something wrong')
+        pass
+
+    return "break"
+
+
+def rClickbinder(r):
+
+    try:
+        for b in [ 'Text', 'Entry', 'Listbox', 'Label']: #
+            r.bind_class(b, sequence='<Button-3>',
+                         func=rClicker, add='')
+    except TclError:
+        print(' - rClickbinder, something wrong')
+
+#==========================================
+#Right mouse click option
+#==========================================
+
+
+
 class wndo(tk.Frame):
     UPDATE_PERIOD = 100  # ms
     editors = []
@@ -122,16 +187,11 @@ class wndo(tk.Frame):
         self.text.bind("<<Change>>", self._on_change)
         self.text.bind("<Configure>", self._on_change)
 
+        self.text.config(background='black', foreground='grey')
+
+
     def _on_change(self, event):
         self.linenumbers.redraw()
-
-
-#super().__init__(**kw)
-        #print('Simple statement!!!')
-        #global data
-        #global text
-        #data = Struct()
-        #initData(data)
 
         #=================By property menthods===================#
 
@@ -161,6 +221,30 @@ class wndo(tk.Frame):
 
     t_save__file = threading.Thread(target=save__file)
 
+    def color_text(self, edit, tag, word, fg_color='grey', bg_color='black'):
+        # add a space to the end of the word
+        word = word + " "
+        edit.insert('end', word)
+
+        end_index1 = edit.index('class')
+        begin_index = "%s-%sc" % (end_index1, len(word) + 1)
+        edit.tag_add(tag, begin_index, end_index1)
+        edit.tag_config(tag, foreground='yellow', background=bg_color)
+
+        end_index2 = edit.index('def')
+        begin_index = "%s-%sc" % (end_index1, len(word) + 1)
+        edit.tag_add(tag, begin_index, end_index1)
+        edit.tag_config(tag, foreground='yellow', background=bg_color)
+
+        end_index3 = edit.index('mainloop')
+        begin_index = "%s-%sc" % (end_index1, len(word) + 1)
+        edit.tag_add(tag, begin_index, end_index1)
+        edit.tag_config(tag, foreground='yellow', background=bg_color)
+
+        #end_index4 = edit.index('class')
+        #begin_index = "%s-%sc" % (end_index1, len(word) + 1)
+        #edit.tag_add(tag, begin_index, end_index1)
+        #edit.tag_config(tag, foreground='yellow', background=bg_color)
 
     # ==============Menu Bar======================#
 
@@ -238,13 +322,14 @@ class wndo(tk.Frame):
 
         #======================Thread========================#
     thread_list = [t, t_exit, t_new__file, t_new__file, t_save_as__file, t_save__all, t_export__html,
-                       t_cut, t_copy, t_clpBrd]
+                       t_cut, t_copy, t_clpBrd, t__f_manager]
         #======================Thread========================#
 
 root.config(menu=wndo.menubar)
+root.bind('<Button-3>',rClicker, add='')
 
 if __name__ == '__main__':
     nPad = wndo()
-    #edtr.pack()
     nPad.pack(side="top", fill="both", expand=True)
+    #nPad.bind('<Button-3>',rClicker, add='')
     root.mainloop()
