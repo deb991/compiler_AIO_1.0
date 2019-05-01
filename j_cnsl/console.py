@@ -7,11 +7,9 @@ from tkinter import font
 from tkinter.font import *
 import subprocess
 import threading
-from threading import *
-
+from threading import Thread
 
 #=====Accessing Command location
-
 
 ntCmdlist1 = "C:\\Windows\\System"
 ntCmdlist2 = "C:\\Windows\\System32"
@@ -32,7 +30,6 @@ else:
 
 
 #More loops & exceptions will be added later as per the requirement
-
 #Building GUI as Command prompt.
 #initial build will be as a native console. which will interact with system & concate the output from system shell
 #to cascade on the new console window
@@ -40,15 +37,15 @@ else:
 consl = Tk()
 
 
-w = 1200               # width
-h = 380                # height
+w = 1200                                        # width
+h = 380                                         # height
 
 # get screen width and height
 ws = consl.winfo_screenwidth()                  # width of the screen
 hs = consl.winfo_screenheight()                 # height of the screen
 
 
-# calculate x and y coordinates for the Tk desktopTaskBar window
+#calculate x and y coordinates for the Tk desktopTaskBar window
 x = (ws/1) - (w/1)
 y = (hs/1) - (h/1)
 
@@ -57,7 +54,6 @@ consl.resizable(1, 1)
 consl.configure(background='black')
 
 #Adding canvas on Root window for other services.
-
 cmd_OP = Canvas(consl, width=1000, height=500, background="black")
 cmd_OP_viewer = Text(cmd_OP, width=700, height=350, background="black", foreground="green")
 
@@ -69,7 +65,7 @@ cmd_OP_viewer.pack(side=TOP, expand=True, fill=X)
 #Font for all output & other operations.
 helv9 = font.Font(family='Helvetica', size=9, weight=tkinter.font.BOLD)
 
-# input of the console are being set.
+#input of the console are being set.
 l1 = Label(consl, text=curr__dir, background="black", foreground="white")
 
 entry = Entry(consl, background="black", foreground="white")
@@ -79,9 +75,7 @@ entry.insert(0, '')
 entry.pack()
 
 l1.pack(side=BOTTOM, anchor=SW, expand=TRUE)
-
 cmdOP = subprocess.check_call(entry.get(), shell=True)
-
 entry.bind("<Return>", (lambda event: (get_entry())))
 
 
@@ -104,26 +98,24 @@ def run_win_cmd():
         raise Exception('cmd %s failed, see above for details for :: \n', entry.get(), process)
 
     # Redirecting a text file for log purpose.
-
 t_run_win_cmd = threading.Thread(target=run_win_cmd)
-t_run_win_cmd.setDaemon(True)
-
 
 
 def get_entry():
-    print(entry.get( ))
-    while True:
-        cmd_OP_viewer.insert(END, str(run_win_cmd()))
-        cmd_OP_viewer.config(state=DISABLED)
-        entry.delete(0, END)
-        t_run_win_cmd.start()
-        pass
-
+    while TRUE:
+        if entry.get() != "exit":
+            cmd_OP_viewer.insert(END, str(run_win_cmd()))
+            cmd_OP_viewer.config(state=DISABLED)
+            entry.delete(0, END)
+            break
+        else:
+            os.system(exit())
+        break
 
 
 cmd_OP.pack( )
 
+#t_run_win_cmd.setDaemon(True)
 
 if __name__ == '__main__':
     consl.mainloop()
-    t_run_win_cmd.join()
