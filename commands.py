@@ -129,8 +129,9 @@ def check__code():
     # return 'EOF'
 
 def console_in_cmd():
-    os.system("start /wait cmd /c {os.getcwd()}")
+    os.system("C:\\Users\\DE635273\\PycharmProjects\\Jarine_console\\j_cnsl\\console.py")
 
+t_console = threading.Thread(target=console_in_cmd)
 
 def f__Manager():
     try:
