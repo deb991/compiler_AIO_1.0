@@ -46,7 +46,7 @@ class Struct():
 
 class TextLineNumbers(tk.Canvas):
     def __init__(self, *args, **kwargs):
-        tk.Canvas.__init__(self, *args, **kwargs)
+        tk.Canvas.__init__(self, *args, **kwargs, background="grey")
         self.textwidget = None
 
     def attach(self, text_widget):
@@ -164,8 +164,6 @@ def rClickbinder(r):
 #Right mouse click option
 #==========================================
 
-
-
 class wndo(tk.Frame):
     UPDATE_PERIOD = 100  # ms
     editors = []
@@ -248,8 +246,10 @@ class wndo(tk.Frame):
 
     # ==============Menu Bar======================#
 
-    menubar = Menu(root)
-    fileMenu = Menu(menubar)
+    menubar = Menu(root, background='#000099', foreground='white',
+               activebackground='#004c99', activeforeground='white')
+    fileMenu = Menu(menubar,  tearoff=0, background="grey", foreground='black',
+                activebackground='#004c99', activeforeground='white')
     menubar.add_cascade(label='File', menu=fileMenu)
 
     fileMenu.add_command(label='New', command=new__file)
@@ -262,7 +262,7 @@ class wndo(tk.Frame):
     fileMenu.add_command(label='Exit', command=exit)
     fileMenu.add_separator()
 
-    editMenu = Menu(menubar)
+    editMenu = Menu(menubar, tearoff=0, background="grey", foreground='black')
     menubar.add_cascade(label='Edit', menu=editMenu)
 
     editMenu.add_command(label='Cut', command=cut)
@@ -272,14 +272,14 @@ class wndo(tk.Frame):
     editMenu.add_separator()
     editMenu.add_command(label='Delete', command=delt)
 
-    viewMenu = Menu(menubar)
+    viewMenu = Menu(menubar, tearoff=0, background="grey", foreground='black')
     menubar.add_cascade(label='View', menu=viewMenu)
 
     viewMenu.add_command(label='Full Screen mode', command=FSM)
     viewMenu.add_command(label='Presentation mode', command=PsM)
     viewMenu.add_separator()
 
-    runMenu = Menu(menubar)
+    runMenu = Menu(menubar,  tearoff=0, background="grey", foreground='black')
     menubar.add_cascade(label='Run', menu=runMenu)
 
     runMenu.add_command(label='Run', command=run)
@@ -287,7 +287,7 @@ class wndo(tk.Frame):
     runMenu.add_separator()
     runMenu.add_command(label='View Break points', command=VBP)
 
-    sett = Menu(menubar)
+    sett = Menu(menubar, tearoff=0, background="grey", foreground='black')
     menubar.add_cascade(label='Settings', menu=sett)
 
     sett.add_command(label='Settings', command=sett)
@@ -295,14 +295,14 @@ class wndo(tk.Frame):
     sett.add_command(label='Project Setting', command=sett__P)
 
 
-    help = Menu(menubar)
+    help = Menu(menubar, tearoff=0, background="grey", foreground='black')
     menubar.add_cascade(label='Help', menu=help)
 
     help.add_command(label='About', command=abt)
     help.add_command(label='File Manager', command=fleAnlzer)
 
 
-    L_Side_menubar = Frame(root)
+    L_Side_menubar = Frame(root, background="grey")
     L_Side_menubar.pack(fill=X, side=BOTTOM)
 
     fileManager__button = Button(L_Side_menubar, text='File Manager', command=f__Manager) #.pack(side=LEFT, padx=1, pady=1)
@@ -314,7 +314,7 @@ class wndo(tk.Frame):
     debug__button = Button(L_Side_menubar, text='Debug', command=f__Manager)
     debug__button.grid(column=2, row=1, columnspan=1, padx=1, sticky=SW)
 
-    console__button = Button(L_Side_menubar, text='Console', command=f__Manager)
+    console__button = Button(L_Side_menubar, text='Console', command=t_console.start)
     console__button.grid(column=3, row=1, columnspan=1, padx=1, sticky=SW)
 
 
@@ -322,10 +322,12 @@ class wndo(tk.Frame):
 
         #======================Thread========================#
     thread_list = [t, t_exit, t_new__file, t_new__file, t_save_as__file, t_save__all, t_export__html,
-                       t_cut, t_copy, t_clpBrd, t__f_manager]
+                       t_cut, t_copy, t_clpBrd, t__f_manager, t_console]
         #======================Thread========================#
 
-root.config(menu=wndo.menubar)
+
+
+root.config(bg='#2A2C2B',menu=wndo.menubar)
 root.bind('<Button-3>',rClicker, add='')
 
 if __name__ == '__main__':
