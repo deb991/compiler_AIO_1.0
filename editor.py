@@ -38,6 +38,30 @@ def f__Manager():
     pass
 
 
+def open__file():
+    print('Open an existing file from the system.')
+    # return 'EOF'
+    file = filedialog.askopenfile(parent=root, mode='rb', title='Select a file')
+    if file != None:
+        contents = file.read()
+        edtr.insert(0.0, contents)
+        file.close()
+
+t = threading.Thread(target=open__file)
+
+def save__file():
+    print('save a file')
+    file = filedialog.asksaveasfile(mode='w')
+    if file != None:
+        # slice off the last character from get, as an extra return is added
+        data = edtr.get('1.0', END + '-1c')
+        file.write(data)
+        file.close()
+        # return 'EOF'
+
+t_save__file = threading.Thread(target=save__file)
+
+
 class Struct():
     pass
 #=========================================
@@ -196,29 +220,6 @@ class wndo(tk.Frame):
 
         # ================Few on demand commands=================#
 
-    def open__file(self):
-        print('Open an existing file from the system.')
-        # return 'EOF'
-        file = filedialog.askopenfile(parent=root, mode='rb', title='Select a file')
-        if file != None:
-            contents = file.read()
-            edtr.insert('1.0', contents)
-            file.close()
-
-    t = threading.Thread(target=open__file)
-
-    def save__file(self):
-        print('save a file')
-        file = filedialog.asksaveasfile(mode='w')
-        if file != None:
-            # slice off the last character from get, as an extra return is added
-            data = edtr.get('1.0', END + '-1c')
-            file.write(data)
-            file.close()
-            # return 'EOF'
-
-    t_save__file = threading.Thread(target=save__file)
-
     def color_text(self, edit, tag, word, fg_color='grey', bg_color='black'):
         # add a space to the end of the word
         word = word + " "
@@ -252,14 +253,14 @@ class wndo(tk.Frame):
                 activebackground='#004c99', activeforeground='white')
     menubar.add_cascade(label='File', menu=fileMenu)
 
-    fileMenu.add_command(label='New', command=new__file)
-    fileMenu.add_command(label='Open', command=open__file)
-    fileMenu.add_command(label='Save', command=save__file)
-    fileMenu.add_command(label='Save as', command=save_as__file)
-    fileMenu.add_command(label='Save All', command=save__all)
-    fileMenu.add_command(label='Export to HTML', command=export__html)
+    fileMenu.add_command(label='New', command=t_new__file.start)
+    fileMenu.add_command(label='Open', command=t.start)
+    fileMenu.add_command(label='Save', command=t_save__file.start)
+    fileMenu.add_command(label='Save as', command=t_save_as__file.start)
+    fileMenu.add_command(label='Save All', command=t_save__all.start)
+    fileMenu.add_command(label='Export to HTML', command=t_export__html.start)
     fileMenu.add_command(label='Make file read only', command=mkFleRdOnly)
-    fileMenu.add_command(label='Exit', command=exit)
+    fileMenu.add_command(label='Exit', command=t_exit.start)
     fileMenu.add_separator()
 
     editMenu = Menu(menubar, tearoff=0, background="grey", foreground='black')
@@ -322,7 +323,7 @@ class wndo(tk.Frame):
 
         #======================Thread========================#
     thread_list = [t, t_exit, t_new__file, t_new__file, t_save_as__file, t_save__all, t_export__html,
-                       t_cut, t_copy, t_clpBrd, t__f_manager, t_console]
+                       t_cut, t_copy, t_clpBrd, tFManager, t_console]
         #======================Thread========================#
 
 
