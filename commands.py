@@ -5,6 +5,7 @@ import threading
 import subprocess
 
 
+
 def new__file():
     print('Create a new file as per the requirement')
     # return 'EOF'
@@ -149,5 +150,5 @@ def f__Manager():
     node.expand( )
     root.mainloop( )
 
-t__f_manager = threading.Thread(target=f__Manager)
+tFManager = threading.Thread(target=f__Manager)
 
