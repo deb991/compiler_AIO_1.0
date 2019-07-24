@@ -1,32 +1,33 @@
 #!/usr/bin/env python -i
 import os
 import sys
-import socket
+import tkinter as tk
+from tkinter import *
+from tkinter import ttk
+
+def progressBar(*args, **kwargs):
+    #master = Tk()
+
+    def progress(currentValue):
+        progressbar["value"] = currentValue
+
+    maxValue = 100
+
+    progressbar = ttk.Progressbar((kwargs), orient="horizontal", length=150, mode="determinate", takefocus=True)
+    progressbar.pack(side=tk.BOTTOM)
+
+    currentValue = 0
+    progressbar["value"] = currentValue
+    progressbar["maximum"] = maxValue
+
+    divisions = 10
+    for i in range(divisions):
+        currentValue = currentValue + 10
+        progressbar.after(500, progress(currentValue))
+        progressbar.update()  # Force an update of the GUI
+
+    progressbar.destroy()
 
 
-print('This is server side script & will define a server at the very begining :[]')
 
-print('Creating socket ~\n')
-soc = socket.socket()
-print('socket creation successfully: \n')
-
-port = 12345
-
-print('\tNow Binding socket with port number : ')
-soc.bind(('', port))
-
-print('Putting server into listen mode : \n')
-soc.listen(5)
-print('socket is listening :: ')
-
-
-print('Now putting altogethet & let server communicate with clients :: []\n')
-while True:
-    print('Establishing connection with Client :: []')
-    c, addr = soc.accept()
-    print('Client coonnected successfully ::' %(addr))
-
-    c.send(b'Connection success')
-
-    c.close()
-    print('Connection closed :: []')
+    #master.mainloop()
