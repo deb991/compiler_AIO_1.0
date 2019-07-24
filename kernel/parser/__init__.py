@@ -1,33 +1,43 @@
-#!/usr/bin/emv python
-import os
-import sys
-import string
+import collections
 import re
 
-predefined_keywords = ['class', 'def', 'import', 'from']
-user_defined_keywords = ['#']
-new_modified_list = []
-line_number = 1
+Token = collections.namedtuple('Token', ['typ', 'value', 'line', 'column'])
 
-f1 = input('Enter file name with directory details ::')
+def tokenize(code):
+    keywords = {'IF', 'THEN', 'ENDIF', 'FOR', 'NEXT', 'GOSUB', 'RETURN', 'CLASS', 'DEF', '@'}
+    token_specification = [
+        ('NUMBER',  r'\d+(\.\d*)?'), # Integer or decimal number
+        ('ASSIGN',  r':='),          # Assignment operator
+        ('END',     r';'),           # Statement terminator
+        ('ID',      r'[A-Za-z0-9$&+,:;=?@#|<>{}._^*()%!-]+'),   # Identifiers
+        ('OP',      r'[+\-*/]'),     # Arithmetic operators
+        ('NEWLINE', r'\n'),          # Line endings
+        ('SKIP',    r'[ \t]+'),      # Skip over spaces and tabs
+        ('MISMATCH',r'.'),           # Any other character
+    ]
+    tok_regex = '|'.join('(?P<%s>%s)' % pair for pair in token_specification)
+    line_num = 1
+    line_start = 0
+    for mo in re.finditer(tok_regex, code):
+        kind = mo.lastgroup
+        value = mo.group(kind)
+        if kind == 'NEWLINE':
+            line_start = mo.end()
+            line_num += 1
+        elif kind == 'SKIP':
+            pass
+        elif kind == 'MISMATCH':
+            pass
+            #raise RuntimeError('%r unexpected on line %d' % (value, line_num))
+        else:
+            if kind == 'ID' and value in keywords:
+                kind = value
+            column = mo.start() - line_start
+            yield Token(kind, value, line_num, column)
 
-for word in predefined_keywords:
-    words = word
-    print(words)
+statements = input('Enter the file path details to review : ')
+with open (statements, 'r') as d:
+    data = d.read()
 
-    if os.path.isfile(f1):
-        with open(f1, 'r') as data:
-            for line in data:
-                for m in re.finditer(r'\bnotebook\b', line):
-                    print(m.group())
-                    line_number += 1
-                    c = re.compile(r"\bimport\b | \bfrom\b | \bclass\b | \bnotebook\b", flags=re.I | re.X)
-                    c.findall(line)
-                    print('This is second flag ::', c.findall(line))
-                    m = re.search('(.*)(?<=notebook)(.*)', line)
-                    if m is not None:
-                        m.group(0)
-                        # print('Found it.')
-                        print(m.group())
-                        print("Found", m.group(0), "line", line_number,
-                              "at", m.start(), "-", m.end())
+for token in tokenize(data):
+    print(token)
