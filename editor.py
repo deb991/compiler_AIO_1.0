@@ -1,29 +1,32 @@
 #!/usr/bin/emv python -i
 import tkinter as tk
 from tkinter import *
-from tkinter import filedialog, Frame, Canvas
-from J_pad.commands import *
+from tkinter import filedialog, Frame, Canvas, dnd
+#from J_pad.commands import *
 from tkinter.messagebox import askokcancel
 import threading
+from ui.sitePackages import progressBar
+from ui.sitePackages.moveable_property_4Widget import make_draggable
+import pdb
 
 
 root = Tk('~~~~J-PAD~~~~', )
 root.configure(background='grey')
 edtr = Canvas(root, width=1200, height=600)
 
-notepad = tk.Text(edtr, width=900, height=400)
-ws = notepad.winfo_screenmmwidth()
-hs = notepad.winfo_screenmmheight()
+#notepad = tk.Text(edtr, width=900, height=400)
+#ws = notepad.winfo_screenmmwidth()
+#hs = notepad.winfo_screenmmheight()
 
-edtr.create_window((0, 0), window=notepad, anchor=NW)
+#edtr.create_window((0, 0), window=notepad, anchor=NW)
 
 #S = Scrollbar(root)
 #S.pack(side=RIGHT, expand=True, fill=Y)
-notepad.pack(side=LEFT, expand=True, fill=X)
+#notepad.pack(side=LEFT, expand=True, fill=X)
 
 #S.config(command=notepad.yview)
 #notepad.config(yscrollcommand=S.set)
-notepad.insert('end', '')
+#notepad.insert('end', '')
 
 #edtr.pack()
 
@@ -44,7 +47,9 @@ def open__file():
     file = filedialog.askopenfile(parent=root, mode='rb', title='Select a file')
     if file != None:
         contents = file.read()
-        edtr.insert(0.0, contents)
+        import pdb;
+        pdb.set_trace()
+        CustomText.insert(INSERT, contents, END + '-1c')
         file.close()
 
 t = threading.Thread(target=open__file)
@@ -62,7 +67,7 @@ def save__file():
 t_save__file = threading.Thread(target=save__file)
 
 
-class Struct():
+def cmd():
     pass
 #=========================================
 #Text input & line count operations.
@@ -128,6 +133,10 @@ class CustomText(tk.Text):
 #==========================================
 #Right mouse click option
 #==========================================
+
+def run():
+    pass
+
 
 def rClicker(e):
     ''' right click context menu for all Tk Entry and Text widgets
@@ -253,77 +262,90 @@ class wndo(tk.Frame):
                 activebackground='#004c99', activeforeground='white')
     menubar.add_cascade(label='File', menu=fileMenu)
 
-    fileMenu.add_command(label='New', command=t_new__file.start)
-    fileMenu.add_command(label='Open', command=t.start)
-    fileMenu.add_command(label='Save', command=t_save__file.start)
-    fileMenu.add_command(label='Save as', command=t_save_as__file.start)
-    fileMenu.add_command(label='Save All', command=t_save__all.start)
-    fileMenu.add_command(label='Export to HTML', command=t_export__html.start)
-    fileMenu.add_command(label='Make file read only', command=mkFleRdOnly)
-    fileMenu.add_command(label='Exit', command=t_exit.start)
+    fileMenu.add_command(label='New', command=cmd)
+    fileMenu.add_command(label='Open', command=open__file)
+    fileMenu.add_command(label='Save', command=cmd)
+    fileMenu.add_command(label='Save as', command=cmd)
+    fileMenu.add_command(label='Save All', command=cmd)
+    fileMenu.add_command(label='Export to HTML', command=cmd)
+    fileMenu.add_command(label='Make file read only', command=cmd)
+    fileMenu.add_command(label='Exit', command=cmd)
     fileMenu.add_separator()
 
     editMenu = Menu(menubar, tearoff=0, background="grey", foreground='black')
     menubar.add_cascade(label='Edit', menu=editMenu)
 
-    editMenu.add_command(label='Cut', command=cut)
-    editMenu.add_command(label='Copy', command=copy)
-    editMenu.add_command(label='ClipBoard', command=clpBrd)
-    editMenu.add_command(label='Paste', command=paste)
+    editMenu.add_command(label='Cut', command=cmd)
+    editMenu.add_command(label='Copy', command=cmd)
+    editMenu.add_command(label='ClipBoard', command=cmd)
+    editMenu.add_command(label='Paste', command=cmd)
     editMenu.add_separator()
-    editMenu.add_command(label='Delete', command=delt)
+    editMenu.add_command(label='Delete', command=cmd)
 
     viewMenu = Menu(menubar, tearoff=0, background="grey", foreground='black')
     menubar.add_cascade(label='View', menu=viewMenu)
 
-    viewMenu.add_command(label='Full Screen mode', command=FSM)
-    viewMenu.add_command(label='Presentation mode', command=PsM)
+    viewMenu.add_command(label='Full Screen mode', command=cmd)
+    viewMenu.add_command(label='Presentation mode', command=cmd)
     viewMenu.add_separator()
 
     runMenu = Menu(menubar,  tearoff=0, background="grey", foreground='black')
     menubar.add_cascade(label='Run', menu=runMenu)
 
-    runMenu.add_command(label='Run', command=run)
-    runMenu.add_command(label='Debug', command=dbug)
+    runMenu.add_command(label='Run', command=cmd)
+    runMenu.add_command(label='Debug', command=cmd)
     runMenu.add_separator()
-    runMenu.add_command(label='View Break points', command=VBP)
+    runMenu.add_command(label='View Break points', command=cmd)
 
     sett = Menu(menubar, tearoff=0, background="grey", foreground='black')
     menubar.add_cascade(label='Settings', menu=sett)
 
     sett.add_command(label='Settings', command=sett)
     sett.add_separator()
-    sett.add_command(label='Project Setting', command=sett__P)
+    sett.add_command(label='Project Setting', command=cmd)
 
 
     help = Menu(menubar, tearoff=0, background="grey", foreground='black')
     menubar.add_cascade(label='Help', menu=help)
 
-    help.add_command(label='About', command=abt)
-    help.add_command(label='File Manager', command=fleAnlzer)
+    help.add_command(label='About', command=cmd)
+    help.add_command(label='File Manager', command=cmd)
 
 
-    L_Side_menubar = Frame(root, background="grey")
-    L_Side_menubar.pack(fill=X, side=BOTTOM)
+    B_Side_menubar = Frame(root, background="grey")
+    B_Side_menubar.pack(fill=X, side=BOTTOM)
 
-    fileManager__button = Button(L_Side_menubar, text='File Manager', command=f__Manager) #.pack(side=LEFT, padx=1, pady=1)
+    fileManager__button = Button(B_Side_menubar, text='File Manager', command=f__Manager) #.pack(side=LEFT, padx=1, pady=1)
     fileManager__button.grid(column=0, row=1, columnspan=1, padx=1, sticky=SW)
 
-    project_window__button = Button(L_Side_menubar, text='Project Window', command=f__Manager)
-    project_window__button.grid(column=1, row=1, columnspan=1, padx=1, sticky=SW)
 
-    debug__button = Button(L_Side_menubar, text='Debug', command=f__Manager)
+
+    debug__button = Button(B_Side_menubar, text='Debug', command=f__Manager)
     debug__button.grid(column=2, row=1, columnspan=1, padx=1, sticky=SW)
 
-    console__button = Button(L_Side_menubar, text='Console', command=t_console.start)
+    console__button = Button(B_Side_menubar, text='Console', command=cmd)
     console__button.grid(column=3, row=1, columnspan=1, padx=1, sticky=SW)
+
+    progressBar.progressBar(B_Side_menubar)
+
+    L_Side_menubar = Frame(root, background="grey")
+    L_Side_menubar.pack(fill=X, side=LEFT)
+
+
+
+
+    project_window__button = Button(L_Side_menubar, text='Project Window', command=f__Manager)
+    project_window__button.grid(column=1, row=1, orient=tk.VERTICAL , columnspan=1, padx=1, sticky=NW)
+
+
+
 
 
         # ==========================Menu Bar==================#
 
         #======================Thread========================#
-    thread_list = [t, t_exit, t_new__file, t_new__file, t_save_as__file, t_save__all, t_export__html,
-                       t_cut, t_copy, t_clpBrd, tFManager, t_console]
+    #thread_list = [t, t_exit, t_new__file, t_new__file, t_save_as__file, t_save__all, t_export__html,
+    #                   t_cut, t_copy, t_clpBrd, tFManager, t_console]
         #======================Thread========================#
 
 
@@ -334,5 +356,5 @@ root.bind('<Button-3>',rClicker, add='')
 if __name__ == '__main__':
     nPad = wndo()
     nPad.pack(side="top", fill="both", expand=True)
-    #nPad.bind('<Button-3>',rClicker, add='')
+    nPad.bind('<Button-3>',rClicker, add='')
     root.mainloop()
