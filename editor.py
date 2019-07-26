@@ -208,7 +208,7 @@ class wndo(tk.Frame):
         self.vsb = tk.Scrollbar(orient="vertical", command=self.text.yview)
         self.text.configure(yscrollcommand=self.vsb.set)
         self.text.tag_configure("bigfont", font=("Helvetica", "24", "bold"))
-        self.linenumbers = TextLineNumbers(self, width=30)
+        self.linenumbers = TextLineNumbers(self, width=60)
         self.linenumbers.attach(self.text)
 
         self.vsb.pack(side="right", fill="y")
@@ -218,7 +218,7 @@ class wndo(tk.Frame):
         self.text.bind("<<Change>>", self._on_change)
         self.text.bind("<Configure>", self._on_change)
 
-        self.text.config(background='black', foreground='grey')
+        self.text.config(background='grey', foreground='white')
 
 
     def _on_change(self, event):
@@ -323,23 +323,22 @@ class wndo(tk.Frame):
     debug__button = Button(B_Side_menubar, text='Debug', command=f__Manager)
     debug__button.grid(column=2, row=1, columnspan=1, padx=1, sticky=SW)
 
-    console__button = Button(B_Side_menubar, text='Console', command=cmd)
-    console__button.grid(column=3, row=1, columnspan=1, padx=1, sticky=SW)
-
     progressBar.progressBar(B_Side_menubar)
 
     L_Side_menubar = Frame(root, background="grey")
-    L_Side_menubar.pack(fill=X, side=LEFT)
+    L_Side_menubar.pack(fill=Y, side=LEFT)
 
+    project_window__button = Button(L_Side_menubar, text='P\nr\no\nj\ne\nc\nt', command=f__Manager)
+    project_window__button.grid(column=1, row=1, columnspan=1, padx=1, sticky=NW)
 
+    T_Side_menubar = Frame(root, background="grey")
+    T_Side_menubar.pack(fill=X, side=TOP)
 
+    console__button = Button(T_Side_menubar, text='Console', command=cmd)
+    console__button.grid(column=3, row=1, columnspan=1, padx=1, sticky=NW)
 
-    project_window__button = Button(L_Side_menubar, text='Project Window', command=f__Manager)
-    project_window__button.grid(column=1, row=1, orient=tk.VERTICAL , columnspan=1, padx=1, sticky=NW)
-
-
-
-
+    search__button = Button(T_Side_menubar, text='Search', command=cmd)
+    search__button.grid(column=5, row=1, columnspan=1, padx=1, sticky=NE)
 
         # ==========================Menu Bar==================#
 
@@ -347,7 +346,6 @@ class wndo(tk.Frame):
     #thread_list = [t, t_exit, t_new__file, t_new__file, t_save_as__file, t_save__all, t_export__html,
     #                   t_cut, t_copy, t_clpBrd, tFManager, t_console]
         #======================Thread========================#
-
 
 
 root.config(bg='#2A2C2B',menu=wndo.menubar)
