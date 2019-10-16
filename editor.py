@@ -2,14 +2,16 @@ import os
 import sys
 import tkinter as tk
 from tkinter import ttk, filedialog
-from PIL import ImageTk, Image
+#from PIL import ImageTk, Image
 from custom_text import CustomText
 from text_Line_Number import TextLineNumbers
-from commands import run_execute
+#from commands import run_execute
 import subprocess as sub
+import pathlib
+from pathlib import *
 
 
-python_keywords = {'False': 'orange', 'None': 'orange', 'True': 'orange',
+python_keywords = {'orange': 'orange', 'False': 'orange', 'None': 'orange', 'True': 'orange',
                   'and': 'orange', 'as': 'orange', 'assert': 'orange',
                   'break': 'orange', 'class': 'orange','continue': 'orange',
                   'def': 'orange', 'del': 'orange', 'elif': 'orange', 'else': 'orange',
@@ -20,7 +22,7 @@ python_keywords = {'False': 'orange', 'None': 'orange', 'True': 'orange',
                    'raise': 'orange', 'return': 'orange', 'self': 'orange', 'try': 'orange', 'while': 'orange',
                    'with': 'orange', 'yield': 'orange', 'print': 'orange',
 
-                    '__future__': 'yellow', '__main__': 'yellow', '_dummy_thread': 'yellow',
+                    'yellow': 'yellow', '__future__': 'yellow', '__main__': 'yellow', '_dummy_thread': 'yellow',
                    '_thread': 'yellow', 'abc': 'yellow', 'aifc': 'yellow', 'argparse': 'yellow',
                    'array': 'yellow', 'ast': 'yellow', 'asynchat': 'yellow', 'asyncio': 'yellow',
                    'asyncore': 'yellow', 'atexit': 'yellow', 'audioop': 'yellow', '	base64': 'yellow',
@@ -87,10 +89,16 @@ class NotePad():
     def __init__(self):
 #Root Configuration ~~
         self.root = tk.Tk()
+        try:
+            self.root.attributes('-zoomed', True)
+
+        except:
+            self.root.state('zoomed')
         #self.root.resizable(False, False)
         #self.root.attributes('-fullscreen', True)
         self.root.configure(background='#253042')
         self.root.bind('<Button-3>', rClicker, add='')
+        self.root.iconify()
 
 #Frame configuration ~~
         self.notebook = ttk.Notebook(self.root)
@@ -158,35 +166,52 @@ class NotePad():
         self.text_expand.insert(1.0, self.contents)
         self.notebook.add(self.tab2, text=self.file_name)
 
+        self.text_expand.bind('<Key>', self.highlighter)
         self.text_expand.bind("<<Change>>", self._on_change)
         self.text_expand.bind("<Configure>", self._on_change)
-        self.text_expand.bind('<Key>', self.highlighter)
         self.text_expand.config(background='black', foreground='grey')
         self.file.close()
+
+        self.notebook.focus()
+        self.notebook.update()
+        self.text_expand.focus()
+        self.text_expand.update()
 
     def Exit(self):
         self.root.destroy()
 
 
     def execute_code(self):
+        result = []
         print(self.file_name)
         #Find that file & check path
         filePath = os.path.abspath(self.file_name)
-        python_interpret = sys.executable
-        print(python_interpret)
+        print('flag 1')
+        cmd = (sys.executable + '\t' + filePath)
         #If python is defined in path::
-        p = sub.call('python self.file_name', shell=True)
+        print('flag 2')
+        p = sub.Popen(cmd, shell=True, stdout=sub.PIPE, bufsize=1, universal_newlines=True)
+        print('flag 3')
+
+        #for line in p.stdout:
+        #    result.append(line)
+        #errcode = p.returncode
+        #for line in result:
+        #    self.data = "".join(map(bytes.decode, result))
+        #    return self.data
+        #if errcode is not None:
+        #    raise Exception('cmd %s failed, see above for details for ::')
+
+        return p.communicate()
+
+    def console_output(self):
         console = tk.Tk()
         canvas = tk.Canvas(console)
-        canvas.pack(expand=True, fill='both')
         notepad = tk.Text(canvas)
         notepad.pack(expand=True, fill='both')
-
-        notepad.insert(1.0, p)
-
+        canvas.pack(expand=True, fill='both')
+        notepad.insert(tk.END, [str(self.execute_code())])
         console.mainloop()
-
-
 
 
     def menuBar(self):
@@ -212,7 +237,7 @@ class NotePad():
 
         menubar.add_cascade(label='Run', menu=RunMenu)
 
-        RunMenu.add_command(label='Run   [Ctrl + Shift + F10]', command=self.execute_code)
+        RunMenu.add_command(label='Run   [Ctrl + Shift + F10]', command=self.console_output)
         RunMenu.add_command(label='Debug [Ctrl + Shift + F11]', command=self.open)
 
 
@@ -233,19 +258,6 @@ class NotePad():
 
 
         self.root.configure(menu=menubar)
-
-
-    def bars(self):
-        button_bar = tk.Frame(self.root, background='grey')
-
-        runButton = tk.Button(button_bar, command=run_execute)
-        runButton.grid(column=0, row=1, columnspan=1, padx=1, sticky=tk.SW)
-
-        button_bar.pack(fill=tk.Y, side=tk.BOTTOM)
-
-        self.root.configure(menu=button_bar)
-
-
 
     def run(self):
         self.root.mainloop()
