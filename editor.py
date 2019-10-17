@@ -19,8 +19,8 @@ python_keywords = {'orange': 'orange', 'False': 'orange', 'None': 'orange', 'Tru
                   'global': 'orange', 'if': 'orange', 'import': 'orange', 'in': 'orange',
                   'is': 'orange', 'lambda': 'orange', 'main': 'orange','name': 'orange',
                    'nonlocal': 'orange', 'not': 'orange','or': 'orange', 'pass': 'orange',
-                   'raise': 'orange', 'return': 'orange', 'self': 'orange', 'try': 'orange', 'while': 'orange',
-                   'with': 'orange', 'yield': 'orange', 'print': 'orange',
+                   'raise': 'orange', 'return': 'orange', 'try': 'orange', 'while': 'orange',
+                   'with': 'orange', 'yield': 'orange', 'print': 'orange', 'tearoff': 'orange',
 
                     'yellow': 'yellow', '__future__': 'yellow', '__main__': 'yellow', '_dummy_thread': 'yellow',
                    '_thread': 'yellow', 'abc': 'yellow', 'aifc': 'yellow', 'argparse': 'yellow',
@@ -28,6 +28,10 @@ python_keywords = {'orange': 'orange', 'False': 'orange', 'None': 'orange', 'Tru
                    'asyncore': 'yellow', 'atexit': 'yellow', 'audioop': 'yellow', '	base64': 'yellow',
                    'bdb': 'yellow', 'binascii': 'yellow', 'binhex': 'yellow', 'bisect': 'yellow',
                    'builtins': 'yellow', 'bz2': 'yellow',
+
+                   'self': 'pink', 'event': 'pink',
+
+                   'err': 'red', 'out': 'pink',
                    }
 
 
@@ -99,6 +103,9 @@ class NotePad():
         self.root.configure(background='#253042')
         self.root.bind('<Button-3>', rClicker, add='')
         self.root.iconify()
+        self.root.title('JRine Console :: '+  os.getcwd())
+        self.root.bind_class("Text", "<Control-a>", self.selectall)
+        self.root.bind_class("Text", "<Control-s>", self.save)
 
 #Frame configuration ~~
         self.notebook = ttk.Notebook(self.root)
@@ -131,6 +138,14 @@ class NotePad():
 
     def _on_change(self, event):
         self.linenumbers.redraw()
+
+    def selectall(self, event):
+        event.widget.tag_add("sel", "1.0", "end")
+
+    def save(self, event):
+        
+        event.widget.tag_add("sel", "1.0", "end")
+        print('File saved :: ', self.file_name)
 
     def highlighter(self, event):
         for k, v in python_keywords.items():
@@ -177,6 +192,42 @@ class NotePad():
         self.text_expand.focus()
         self.text_expand.update()
 
+
+    def newFile(self):
+        self.tab2 = ttk.Frame(self.notebook, style='My.TFrame')
+        self.text_expand = CustomText(self.tab2)
+
+        self.vsb = tk.Scrollbar(self.tab2, orient="vertical", command=self.text_expand.yview)
+        self.text_expand.configure(yscrollcommand=self.vsb.set)
+
+        self.linenumbers = TextLineNumbers(self.tab2, width=30)
+        self.linenumbers.attach(self.text_expand)
+
+        self.vsb.pack(side="right", fill="y")
+        self.linenumbers.pack(side="left", fill="y")
+        self.text_expand.pack(expand=1, fill='both')
+
+        #Creating New File::
+        self.file = filedialog.asksaveasfile(initialdir=os.getcwd(), title='Create New File', )
+
+        self.file_name = os.path.basename(self.file.name)
+        #self.contents = self.file.read()
+
+        self.text_expand.insert(1.0, '')
+        self.notebook.add(self.tab2, text=self.file_name)
+
+        self.text_expand.bind('<Key>', self.highlighter)
+        self.text_expand.bind("<<Change>>", self._on_change)
+        self.text_expand.bind("<Configure>", self._on_change)
+        self.text_expand.config(background='black', foreground='grey')
+        self.file.close()
+
+        self.notebook.focus()
+        self.notebook.update()
+        self.text_expand.focus()
+        self.text_expand.update()
+
+
     def Exit(self):
         self.root.destroy()
 
@@ -220,6 +271,7 @@ class NotePad():
         filemanu = tk.Menu(menubar, tearoff=0, background="grey", foreground='black',
                            activebackground='#004c99', activeforeground='black')
         menubar.add_cascade(label='File', menu=filemanu)
+        filemanu.add_command(label='New File   [Ctrl + O]', command=self.newFile)
         filemanu.add_command(label='Open File   [Ctrl + O]', command=self.open)
         filemanu.add_command(label='Exit   [Ctrl + Q]', command=self.Exit)
 
@@ -259,8 +311,13 @@ class NotePad():
 
         self.root.configure(menu=menubar)
 
+    def bottom_nav(self):
+        pass
+
     def run(self):
         self.root.mainloop()
+
+
 
 
 if __name__ == '__main__':
