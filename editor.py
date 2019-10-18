@@ -11,6 +11,7 @@ import pathlib
 from pathlib import *
 
 
+
 python_keywords = {'orange': 'orange', 'False': 'orange', 'None': 'orange', 'True': 'orange',
                   'and': 'orange', 'as': 'orange', 'assert': 'orange',
                   'break': 'orange', 'class': 'orange','continue': 'orange',
@@ -143,7 +144,7 @@ class NotePad():
         event.widget.tag_add("sel", "1.0", "end")
 
     def save(self, event):
-        
+
         event.widget.tag_add("sel", "1.0", "end")
         print('File saved :: ', self.file_name)
 
@@ -181,7 +182,7 @@ class NotePad():
         self.text_expand.insert(1.0, self.contents)
         self.notebook.add(self.tab2, text=self.file_name)
 
-        self.text_expand.bind('<Key>', self.highlighter)
+        self.text_expand.bind('<Enter>', self.highlighter)
         self.text_expand.bind("<<Change>>", self._on_change)
         self.text_expand.bind("<Configure>", self._on_change)
         self.text_expand.config(background='black', foreground='grey')
@@ -241,19 +242,10 @@ class NotePad():
         cmd = (sys.executable + '\t' + filePath)
         #If python is defined in path::
         print('flag 2')
-        p = sub.Popen(cmd, shell=True, stdout=sub.PIPE, bufsize=1, universal_newlines=True)
+        p = sub.Popen(cmd, shell=True, stdout=sub.PIPE,
+                      universal_newlines=True)
         print('flag 3')
-
-        #for line in p.stdout:
-        #    result.append(line)
-        #errcode = p.returncode
-        #for line in result:
-        #    self.data = "".join(map(bytes.decode, result))
-        #    return self.data
-        #if errcode is not None:
-        #    raise Exception('cmd %s failed, see above for details for ::')
-
-        return p.communicate()
+        print(p)
 
     def console_output(self):
         console = tk.Tk()
