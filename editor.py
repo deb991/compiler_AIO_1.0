@@ -8,7 +8,7 @@ from text_Line_Number import TextLineNumbers
 #from commands import run_execute
 import subprocess as sub
 import pathlib
-from pathlib import *
+from pathlib import Path
 
 
 
@@ -33,6 +33,8 @@ python_keywords = {'orange': 'orange', 'False': 'orange', 'None': 'orange', 'Tru
                    'self': 'pink', 'event': 'pink',
 
                    'err': 'red', 'out': 'pink',
+
+                   '(': 'blue',')': 'blue' , '<': 'blue', '>': 'blue', '[': 'blue', ']': 'blue',
                    }
 
 
@@ -139,6 +141,7 @@ class NotePad():
 
     def _on_change(self, event):
         self.linenumbers.redraw()
+        self.linenumbers.config(bg='grey')
 
     def selectall(self, event):
         event.widget.tag_add("sel", "1.0", "end")
@@ -205,6 +208,7 @@ class NotePad():
         self.linenumbers.attach(self.text_expand)
 
         self.vsb.pack(side="right", fill="y")
+        #self.linenumbers.config(background='black', foreground='grey')
         self.linenumbers.pack(side="left", fill="y")
         self.text_expand.pack(expand=1, fill='both')
 
@@ -221,6 +225,7 @@ class NotePad():
         self.text_expand.bind("<<Change>>", self._on_change)
         self.text_expand.bind("<Configure>", self._on_change)
         self.text_expand.config(background='black', foreground='grey')
+        self.linenumbers.config(background='black', foreground='blue')
         self.file.close()
 
         self.notebook.focus()
@@ -237,15 +242,22 @@ class NotePad():
         result = []
         print(self.file_name)
         #Find that file & check path
-        filePath = os.path.abspath(self.file_name)
-        print('flag 1')
-        cmd = (sys.executable + '\t' + filePath)
-        #If python is defined in path::
-        print('flag 2')
-        p = sub.Popen(cmd, shell=True, stdout=sub.PIPE,
-                      universal_newlines=True)
-        print('flag 3')
-        print(p)
+        scriptDir = os.getcwd()
+        counter = 1
+        for folder, subfolders, files in os.walk(scriptDir):
+            for execFile in files:
+                if execFile == self.file_name:
+                    filePath = os.path.join(folder, execFile)
+                    print('Flag 1')
+                    print(filePath)
+
+                    cmd = (sys.executable + '\t' + filePath)
+                    # If python is defined in path::
+                    print('flag 2')
+                    p = sub.Popen(cmd, shell=True, stdout=sub.PIPE,
+                                  universal_newlines=True)
+                    print('flag 3')
+                    print(p)
 
     def console_output(self):
         console = tk.Tk()
