@@ -182,7 +182,7 @@ class NotePad():
 
         self.file = open(filedialog.askopenfilename(initialdir=os.getcwd(), title='Open a Python file'))
         file_Path = [self.file]
-        
+
         self.file_name = os.path.basename(self.file.name)
 
         self.contents = self.file.read()
@@ -244,41 +244,65 @@ class NotePad():
 
 
     def execute_code(self):
-        result = []
-        print(self.file_name)
-        print('Installed Python interpreter:: ', sys.executable)
-        #Find that file & check path
-        PrimaryDir = 'C:\\'
-        counter = 1
-        for folder, subfolders, files in os.walk(PrimaryDir):
-            for execFile in files:
-                if execFile == self.file_name:
-                    self.filePath = os.path.join(folder, execFile)
-                    print('Flag 1')
-                    print(self.filePath)
-
-                    cmd = (sys.executable + '\t' + self.filePath)
-                    # If python is defined in path::
-                    print('flag 2')
-                    p = sub.Popen(cmd, shell=True, stdout=sub.PIPE,
-                                  universal_newlines=True)
-                    print('flag 3')
-                    print(p)
-
-    t_execute_code = Thread(target=execute_code)
-
-    def console_output(self):
         console = tk.Tk()
         canvas = tk.Canvas(console)
         notepad = tk.Text(canvas)
         notepad.pack(expand=True, fill='both')
         canvas.pack(expand=True, fill='both')
-        notepad.insert(tk.END, [str(self.execute_code())])
+        result = []
+        print(self.file_name)
+        print('Installed Python interpreter:: ', sys.executable)
+        #Find that file & check path
+        PrimaryDir = os.getcwd()
+        counter = 1
+        for folder, subfolders, files in os.walk(PrimaryDir):
+            if 'venv' in subfolders:
+                subfolders.remove('venv')
+                for execFile in files:
+                    if execFile == self.file_name:
+                        self.filePath = os.path.join(folder, execFile)
+                        print('Flag 1')
+                        print(self.filePath)
+                        print('This is based on Subprocess.Popen operation')
+                        cmd = (sys.executable + '\t' + self.filePath)
+                        # If python is defined in path::
+                        print('flag 2')
+                        try:
+                            print('subprocess.Popen')
+                            p = sub.Popen(cmd, shell=True, stdout=sub.PIPE,
+                                          universal_newlines=True)
 
-        if __name__ == '__main__':
-            console.mainloop()
+                            # self.out, self.err = p.communicate()
+                            print('flag 3')
+                            return p.communicate()
+                        except:
+                            print('os.System')
+                            p = os.system(cmd)
 
-    t_console_output = Thread(target=console_output)
+                            return p
+
+                        # notepad.insert(tk.END, [str(self.execute_code())])
+                    notepad.insert(tk.END, self.execute_code())
+
+        console.mainloop()
+
+
+
+    t_execute_code = Thread(target=execute_code)
+
+    #def console_output(self):
+    #    console = tk.Tk()
+    #    canvas = tk.Canvas(console)
+    #    notepad = tk.Text(canvas)
+    #    notepad.pack(expand=True, fill='both')
+    #    canvas.pack(expand=True, fill='both')
+    #    #notepad.insert(tk.END, [str(self.execute_code())])
+    #    notepad.insert(tk.END, self.execute_code())
+#
+#
+    #    console.mainloop()
+
+    #t_console_output = Thread(target=console_output)
 
 
     def menuBar(self):
@@ -305,7 +329,7 @@ class NotePad():
 
         menubar.add_cascade(label='Run', menu=RunMenu)
 
-        RunMenu.add_command(label='Run   [Ctrl + Shift + F10]', command=self.console_output)
+        RunMenu.add_command(label='Run   [Ctrl + Shift + F10]', command=self.execute_code)
         RunMenu.add_command(label='Debug [Ctrl + Shift + F11]', command=self.open)
 
 
