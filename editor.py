@@ -181,7 +181,7 @@ class NotePad():
         self.text_expand.pack(expand=1, fill='both')
 
         self.file = open(filedialog.askopenfilename(initialdir=os.getcwd(), title='Open a Python file'))
-        file_Path = [self.file]
+        print(self.file.name)
 
         self.file_name = os.path.basename(self.file.name)
 
@@ -242,68 +242,27 @@ class NotePad():
     def Exit(self):
         self.root.destroy()
 
-
     def execute_code(self):
-        console = tk.Tk()
-        canvas = tk.Canvas(console)
-        notepad = tk.Text(canvas)
-        notepad.pack(expand=True, fill='both')
+
+        python = sys.executable
+        os.chdir(os.getcwd())
+
+        # scriptDir = sys.path.appent(folder)
+        # cmd = (python + '\t' + self.filePath)
+        print('Subprocess module used to execute this script')
+        e = sub.Popen(['python', self.file.name], shell=True, stdout=sub.PIPE, universal_newlines=True)
+        out, err = e.communicate()
+
+        executionPanel = tk.Tk()
+        canvas = tk.Canvas(executionPanel)
+
+        text = tk.Text(canvas)
+        text.pack(expand=True, fill='both')
         canvas.pack(expand=True, fill='both')
-        result = []
-        print(self.file_name)
-        print('Installed Python interpreter:: ', sys.executable)
-        #Find that file & check path
-        PrimaryDir = os.getcwd()
-        counter = 1
-        for folder, subfolders, files in os.walk(PrimaryDir):
-            if 'venv' in subfolders:
-                subfolders.remove('venv')
-                for execFile in files:
-                    if execFile == self.file_name:
-                        self.filePath = os.path.join(folder, execFile)
-                        print('Flag 1')
-                        print(self.filePath)
-                        print('This is based on Subprocess.Popen operation')
-                        cmd = (sys.executable + '\t' + self.filePath)
-                        # If python is defined in path::
-                        print('flag 2')
-                        try:
-                            print('subprocess.Popen')
-                            p = sub.Popen(cmd, shell=True, stdout=sub.PIPE,
-                                          universal_newlines=True)
 
-                            # self.out, self.err = p.communicate()
-                            print('flag 3')
-                            return p.communicate()
-                        except:
-                            print('os.System')
-                            p = os.system(cmd)
+        text.insert(1.0, out)
 
-                            return p
-
-                        # notepad.insert(tk.END, [str(self.execute_code())])
-                    notepad.insert(tk.END, self.execute_code())
-
-        console.mainloop()
-
-
-
-    t_execute_code = Thread(target=execute_code)
-
-    #def console_output(self):
-    #    console = tk.Tk()
-    #    canvas = tk.Canvas(console)
-    #    notepad = tk.Text(canvas)
-    #    notepad.pack(expand=True, fill='both')
-    #    canvas.pack(expand=True, fill='both')
-    #    #notepad.insert(tk.END, [str(self.execute_code())])
-    #    notepad.insert(tk.END, self.execute_code())
-#
-#
-    #    console.mainloop()
-
-    #t_console_output = Thread(target=console_output)
-
+        executionPanel.mainloop()
 
     def menuBar(self):
         menubar = tk.Menu(self.root, background='#000099', foreground='white',
@@ -356,8 +315,6 @@ class NotePad():
 
     def run(self):
         self.root.mainloop()
-
-
 
 
 if __name__ == '__main__':
