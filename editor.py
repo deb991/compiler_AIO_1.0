@@ -139,6 +139,8 @@ class NotePad():
             self.rows += 1
 
         rows = 0
+        #self._words=open("/usr/share/dict/words").read().split("\n")
+        self._words=open("C:\\Users\\DE635273\\PycharmProjects\\Jarine_console\\dict\\words").read().split("\n")
 
 
     def _on_change(self, event):
@@ -165,6 +167,19 @@ class NotePad():
                     startIndex = endIndex
                 else:
                     break
+
+    def Spellcheck(self, event):
+        '''Spellcheck the word preceeding the insertion point'''
+        index = self.text_expand.search(r'\s', "insert", backwards=True, regexp=True)
+        if index == "":
+            index = "1.0"
+        else:
+            index = self.text_expand.index("%s+1c" % index)
+        word = self.text_expand.get(index, "insert")
+        if word in self._words:
+            self.text_expand.tag_remove("misspelled", index, "%s+%dc" % (index, len(word)))
+        else:
+            self.text_expand.tag_add("misspelled", index, "%s+%dc" % (index, len(word)))
 
     def open(self):
         self.tab2 = ttk.Frame(self.notebook, style='My.TFrame')
@@ -193,7 +208,7 @@ class NotePad():
         self.text_expand.bind('<Enter>', self.highlighter)
         self.text_expand.bind("<<Change>>", self._on_change)
         self.text_expand.bind("<Configure>", self._on_change)
-        self.text_expand.config(background='black', foreground='grey')
+        self.text_expand.config(background='#585858', foreground='white')
         self.file.close()
 
         self.notebook.focus()
@@ -227,9 +242,10 @@ class NotePad():
         self.notebook.add(self.tab2, text=self.file_name)
 
         self.text_expand.bind('<Key>', self.highlighter)
+        self.text_expand.bind('<space>', self.Spellcheck)
         self.text_expand.bind("<<Change>>", self._on_change)
         self.text_expand.bind("<Configure>", self._on_change)
-        self.text_expand.config(background='black', foreground='grey')
+        self.text_expand.config(background='#585858', foreground='white')
         self.linenumbers.config(background='black', foreground='blue')
         self.file.close()
 
@@ -261,6 +277,7 @@ class NotePad():
         canvas.pack(expand=True, fill='both')
 
         text.insert(1.0, out)
+        text.config(bg='black', fg='green')
 
         executionPanel.mainloop()
 
