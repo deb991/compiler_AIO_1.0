@@ -1,7 +1,7 @@
 import os
 import sys
 import tkinter as tk
-from tkinter import ttk, filedialog
+from tkinter import ttk, filedialog, messagebox
 #from PIL import ImageTk, Image
 from custom_text import CustomText
 from text_Line_Number import TextLineNumbers
@@ -108,14 +108,14 @@ class NotePad():
         self.root.configure(background='#253042')
         self.root.bind('<Button-3>', rClicker, add='')
         self.root.iconify()
-        self.root.title('JRine Console :: '+  os.getcwd())
+        self.root.title('JRine Console :: ')
         self.root.bind_class("Text", "<Control-a>", self.selectall)
         self.root.bind_class("Text", "<Control-s>", self.save)
+        self.root.geometry('300x300')
 
 #Frame configuration ~~
         self.notebook = ttk.Notebook(self.root)
         self.notebook.grid(row=2, column=0, columnspan=50, rowspan=49, sticky='NESW')
-
 
         self.rows = 0
 
@@ -140,8 +140,8 @@ class NotePad():
 
         rows = 0
         #self._words=open("/usr/share/dict/words").read().split("\n")
-        #self._words=open("C:\\Users\\DE635273\\PycharmProjects\\Jarine_console\\dict\\words").read().split("\n")
-        self._words=open("C:\\Users\\JsOzzius\\Documents\\JARINE_Console\\dict\\words").read().split("\n")
+        self._words=open("C:\\Users\\DE635273\\PycharmProjects\\Jarine_console\\dict\\words").read().split("\n")
+        #self._words=open("C:\\Users\\JsOzzius\\Documents\\JARINE_Console\\dict\\words").read().split("\n")
 
 
     def _on_change(self, event):
@@ -184,8 +184,21 @@ class NotePad():
 
 
     def indendation(self, event):
-        event.widget.tk_focusNext().focus()
-        return ("break")
+        #Find line starting & its position:
+        index = self.text_expand.search(r'\s', "insert", backwards=True, regexp=True)
+        res = None
+        for i in range(0, len(index)):
+            if index[i] != 0:
+                res = i + 1
+                break
+
+        if res == None:
+            print('File is empty:: ')
+        else:
+            print(' You can see the result'.format(str(res)))
+
+        #Find line ending & its position:
+        print('Dummy method !')
 
 
     def open(self):
@@ -216,7 +229,7 @@ class NotePad():
         self.text_expand.bind('<:>', self.indendation)
         self.text_expand.bind("<<Change>>", self._on_change)
         self.text_expand.bind("<Configure>", self._on_change)
-        self.text_expand.config(background='#585858', foreground='white')
+        self.text_expand.config(background='#2C363E', foreground='white')
         self.file.close()
 
         self.notebook.focus()
@@ -251,11 +264,11 @@ class NotePad():
 
         self.text_expand.bind('<Key>', self.highlighter)
         self.text_expand.bind('<space>', self.Spellcheck)
-        self.text_expand.bind('<Tab>', self.indendation)
+        self.text_expand.bind('<Enter>', self.indendation)
         self.text_expand.bind("<<Change>>", self._on_change)
         self.text_expand.bind("<Configure>", self._on_change)
-        self.text_expand.config(background='#585858', foreground='white')
-        self.linenumbers.config(background='black', foreground='blue')
+        self.text_expand.config(background='#2C363E', foreground='white')
+        self.linenumbers.config(background='#2C363E') #, foreground='blue')
         self.file.close()
 
         self.notebook.focus()
@@ -265,7 +278,7 @@ class NotePad():
 
 
     def Exit(self):
-        self.root.destroy()
+        messagebox.askyesno(title='Exit JRine IDE', message='Please proceed to exit IDE', yes=self.root.destroy())
 
     def execute_code(self):
 
@@ -333,8 +346,21 @@ class NotePad():
         HelpMenu.add_command(label='About', command=self.open)
         HelpMenu.add_command(label='Check For Updates', command=self.open)
 
+        self.bottomBar = tk.Frame(self.root)
+
+        charCount = ttk.Label(self.bottomBar, text='Char__Count')
+        charCount.pack(side=tk.RIGHT, padx=2, pady=2)
+        charCount = ttk.Label(self.bottomBar, text='Encoding:')
+        charCount.pack(side=tk.RIGHT, padx=2, pady=2)
+
+        #self.bottomBar.pack(side=tk.BOTTOM, expand=True, fill=tk.Y)
+        self.bottomBar.grid(column=0, row=60, columnspan=5, rowspan=4, sticky='NS')
+
+
 
         self.root.configure(menu=menubar)
+
+        #self.root.configure()
 
     def bottom_nav(self):
         pass
