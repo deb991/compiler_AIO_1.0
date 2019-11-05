@@ -140,7 +140,8 @@ class NotePad():
 
         rows = 0
         #self._words=open("/usr/share/dict/words").read().split("\n")
-        self._words=open("C:\\Users\\DE635273\\PycharmProjects\\Jarine_console\\dict\\words").read().split("\n")
+        #self._words=open("C:\\Users\\DE635273\\PycharmProjects\\Jarine_console\\dict\\words").read().split("\n")
+        self._words=open("C:\\Users\\JsOzzius\\Documents\\JARINE_Console\\dict\\words").read().split("\n")
 
 
     def _on_change(self, event):
@@ -181,6 +182,12 @@ class NotePad():
         else:
             self.text_expand.tag_add("misspelled", index, "%s+%dc" % (index, len(word)))
 
+
+    def indendation(self, event):
+        event.widget.tk_focusNext().focus()
+        return ("break")
+
+
     def open(self):
         self.tab2 = ttk.Frame(self.notebook, style='My.TFrame')
         self.text_expand = CustomText(self.tab2)
@@ -206,6 +213,7 @@ class NotePad():
         self.notebook.add(self.tab2, text=self.file_name)
 
         self.text_expand.bind('<Enter>', self.highlighter)
+        self.text_expand.bind('<:>', self.indendation)
         self.text_expand.bind("<<Change>>", self._on_change)
         self.text_expand.bind("<Configure>", self._on_change)
         self.text_expand.config(background='#585858', foreground='white')
@@ -243,6 +251,7 @@ class NotePad():
 
         self.text_expand.bind('<Key>', self.highlighter)
         self.text_expand.bind('<space>', self.Spellcheck)
+        self.text_expand.bind('<Tab>', self.indendation)
         self.text_expand.bind("<<Change>>", self._on_change)
         self.text_expand.bind("<Configure>", self._on_change)
         self.text_expand.config(background='#585858', foreground='white')
