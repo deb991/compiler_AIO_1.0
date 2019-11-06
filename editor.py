@@ -140,8 +140,8 @@ class NotePad():
 
         rows = 0
         #self._words=open("/usr/share/dict/words").read().split("\n")
-        self._words=open("C:\\Users\\DE635273\\PycharmProjects\\Jarine_console\\dict\\words").read().split("\n")
-        #self._words=open("C:\\Users\\JsOzzius\\Documents\\JARINE_Console\\dict\\words").read().split("\n")
+        #self._words=open("C:\\Users\\DE635273\\PycharmProjects\\Jarine_console\\dict\\words").read().split("\n")
+        self._words=open("C:\\Users\\JsOzzius\\Documents\\JARINE_Console\\dict\\words").read().split("\n")
 
 
     def _on_change(self, event):
@@ -185,20 +185,15 @@ class NotePad():
 
     def indendation(self, event):
         #Find line starting & its position:
-        index = self.text_expand.search(r'\s', "insert", backwards=True, regexp=True)
-        res = None
-        for i in range(0, len(index)):
-            if index[i] != 0:
-                res = i + 1
-                break
+        colon = ":"
+        index = self.text_expand.search(r':\Z', "insert", backwards=True, regexp=True)
+        #firstChar = index[0]
+        lastChar = index.endswith(":")
 
-        if res == None:
-            print('File is empty:: ')
+        if index.endswith(":"):
+            print('Mathc found', enumerate(lastChar))
         else:
-            print(' You can see the result'.format(str(res)))
-
-        #Find line ending & its position:
-        print('Dummy method !')
+            print(lastChar)
 
 
     def open(self):
@@ -264,7 +259,7 @@ class NotePad():
 
         self.text_expand.bind('<Key>', self.highlighter)
         self.text_expand.bind('<space>', self.Spellcheck)
-        self.text_expand.bind('<Enter>', self.indendation)
+        self.text_expand.bind('<:>', self.indendation)
         self.text_expand.bind("<<Change>>", self._on_change)
         self.text_expand.bind("<Configure>", self._on_change)
         self.text_expand.config(background='#2C363E', foreground='white')
