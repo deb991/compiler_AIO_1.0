@@ -140,8 +140,8 @@ class NotePad():
 
         rows = 0
         #self._words=open("/usr/share/dict/words").read().split("\n")
-        #self._words=open("C:\\Users\\DE635273\\PycharmProjects\\Jarine_console\\dict\\words").read().split("\n")
-        self._words=open("C:\\Users\\JsOzzius\\Documents\\JARINE_Console\\dict\\words").read().split("\n")
+        self._words=open("C:\\Users\\DE635273\\PycharmProjects\\Jarine_console\\dict\\words").read().split("\n")
+        #self._words=open("C:\\Users\\JsOzzius\\Documents\\JARINE_Console\\dict\\words").read().split("\n")
 
 
     def _on_change(self, event):
@@ -162,7 +162,7 @@ class NotePad():
             while True:
                 startIndex = self.text_expand.search(k, startIndex, tk.END)
                 if startIndex:
-                    endIndex = self.text_expand.index('%s+%dc' % (startIndex, (len(k))))
+                    endIndex = self.text_expand.index('%s+%dc' % (startIndex, len((k))))
                     self.text_expand.tag_add(k, startIndex, endIndex)
                     self.text_expand.tag_config(k, foreground=v)
                     startIndex = endIndex
@@ -188,12 +188,39 @@ class NotePad():
         colon = ":"
         index = self.text_expand.search(r':\Z', "insert", backwards=True, regexp=True)
         #firstChar = index[0]
-        lastChar = index.endswith(":")
+        #lastChar = (index.split().endswith(":"))
 
-        if index.endswith(":"):
-            print('Mathc found', enumerate(lastChar))
-        else:
-            print(lastChar)
+        ##https://www.geeksforgeeks.org/python-find-position-of-a-character-in-given-string/
+
+        #res = None
+        #for i in range(0, len(index)):
+        #    if index[i] == colon:
+        #        res = i+1
+        #        break
+#
+        #if res == None:
+        #    print('demo under if:: ', str(res))
+        #else:
+        #    print('demo under else:: Char{} present at {}'.format(colon, str(res)))
+        #######################################
+
+        #for i in len(index):
+        #    firstChar = i[0]
+        #    lastChar = i[-1]
+#
+#
+        #if index.endswith(":"):
+        #    print('Mathc found', enumerate(lastChar))
+        #else:
+        #    print(lastChar)
+
+        ##Using regular expression##
+
+        char_Coordinate = self.text_expand.get(tk.INSERT)
+        x, y, width, height = self.text_expand.bbox(tk.INSERT)
+        screen_x = x + (0 if char_Coordinate == u'\n' else width) + self.root.winfo_x()
+        screen_y = y + height + self.root.winfo_y()
+        print(screen_x, screen_y)
 
 
     def open(self):
